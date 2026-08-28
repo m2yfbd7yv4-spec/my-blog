@@ -7,25 +7,47 @@ type PostCardProps = {
     title: string;
     slug: string;
     excerpt: string | null;
+    cover_image: string | null;
     published_at: string | null;
   };
+  // 归档方格视图传了 onOpen：点卡片弹浮层，而不是跳转到独立文章页
+  onOpen?: () => void;
 };
 
-export function PostCard({ post }: PostCardProps) {
-  return (
-    <Link
-      href={`/blog/${post.slug}`}
-      className="block rounded-lg border border-gray-200 bg-white p-6 transition hover:shadow-md"
-    >
-      <h2 className="text-xl font-semibold mb-2 group-hover:text-indigo-600">
+export function PostCard({ post, onOpen }: PostCardProps) {
+  const inner = (
+    <>
+      {post.cover_image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={post.cover_image}
+          alt={post.title}
+          className="w-full mb-4 object-cover"
+        />
+      )}
+      <h2 className="font-display text-lg md:text-xl leading-snug text-[#241209] transition-colors group-hover:text-[#5a1f1c]">
         {post.title}
       </h2>
-      {post.excerpt && (
-        <p className="text-gray-600 line-clamp-3">{post.excerpt}</p>
-      )}
-      <time className="block mt-3 text-sm text-gray-400">
+      <time className="mt-2 block text-xs tracking-[0.15em] text-[#7a3f2a]">
         {formatDate(post.published_at)}
       </time>
+      {post.excerpt && (
+        <p className="mt-2 text-sm text-[#46281a] line-clamp-3">{post.excerpt}</p>
+      )}
+    </>
+  );
+
+  if (onOpen) {
+    return (
+      <button type="button" onClick={onOpen} className="group block w-full text-left">
+        {inner}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={`/blog/${post.slug}`} className="group block">
+      {inner}
     </Link>
   );
 }

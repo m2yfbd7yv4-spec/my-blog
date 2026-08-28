@@ -1,3 +1,10 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
 // 把标题转成 URL 友好的 slug；纯中文标题自动用随机短串兜底
 export function slugify(input: string): string {
   const s = input

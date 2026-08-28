@@ -19,10 +19,23 @@ export type Post = {
   excerpt: string | null;
   cover_image: string | null;
   content: string;
+  category: string;
   status: PostStatus;
   published_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+// 归档页展示用（含分类 + 正文，浮层阅读时用）
+export type ArchivePost = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  cover_image: string | null;
+  published_at: string | null;
+  category: string;
+  content: string;
 };
 
 export type Comment = {
@@ -49,6 +62,14 @@ export type CommentDisplay = {
   profiles: { username: string | null } | null;
 };
 
+// 留言板消息展示用（带作者昵称）
+export type GuestbookMessageDisplay = {
+  id: string;
+  content: string;
+  created_at: string;
+  profiles: { username: string | null } | null;
+};
+
 // 后台审核评论用（带作者昵称 + 所属文章标题）
 export type ModerationComment = {
   id: string;
@@ -56,4 +77,13 @@ export type ModerationComment = {
   created_at: string;
   profiles: { username: string | null } | null;
   posts: { title: string | null } | null;
+};
+
+// 灵感源泉记录展示用（带作者昵称）
+export type Inspiration = {
+  id: string;
+  content: string;
+  image_url: string | null;
+  created_at: string;
+  profiles: { username: string | null } | null;
 };

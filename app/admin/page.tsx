@@ -29,7 +29,7 @@ export default async function AdminPage() {
           </Link>
           <Link
             href="/admin/editor"
-            className="rounded-md bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
+            className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
           >
             + 写新文章
           </Link>

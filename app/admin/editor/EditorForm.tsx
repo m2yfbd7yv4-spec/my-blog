@@ -4,6 +4,7 @@ import { useRef, useState, useActionState } from "react";
 import Link from "next/link";
 import { savePost } from "@/lib/actions/posts";
 import { slugify } from "@/lib/utils";
+import { CATEGORIES, DEFAULT_CATEGORY } from "@/lib/categories";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import type { ActionState, Post } from "@/lib/types";
 
@@ -17,6 +18,9 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? "");
   const [coverImage, setCoverImage] = useState(initialPost?.cover_image ?? "");
   const [content, setContent] = useState(initialPost?.content ?? "");
+  const [category, setCategory] = useState(
+    initialPost?.category ?? DEFAULT_CATEGORY,
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -131,6 +135,25 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
         </div>
 
         <div>
+          <label htmlFor="category" className="block text-sm font-medium mb-1">
+            分类
+          </label>
+          <select
+            id="category"
+            name="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className={inputCls}
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <div className="flex items-center justify-between mb-1">
             <label htmlFor="content" className="text-sm font-medium">
               正文（支持 Markdown）
@@ -192,7 +215,7 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
             name="action"
             value="publish"
             disabled={pending}
-            className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
           >
             {pending ? "发布中…" : "发布"}
           </button>

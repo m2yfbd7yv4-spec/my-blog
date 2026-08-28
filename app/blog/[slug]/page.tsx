@@ -4,6 +4,7 @@ import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { CommentSection } from "@/components/CommentSection";
 import { formatDate } from "@/lib/utils";
 import type { CommentDisplay } from "@/lib/types";
+import { PageTransition } from "@/components/PageTransition";
 
 export async function generateMetadata({
   params,
@@ -54,18 +55,24 @@ export default async function PostPage({
   } = await supabase.auth.getUser();
 
   return (
-    <article>
-      <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-      <time className="block text-sm text-gray-400 mb-8">
-        {formatDate(post.published_at)}
-      </time>
+    <PageTransition>
+      <div className="max-w-3xl mx-auto px-4 py-16">
+      <article>
+      <header className="mb-12">
+        <h1 className="font-display text-4xl md:text-5xl text-[#1a1a1a] mb-4">
+          {post.title}
+        </h1>
+        <time className="block text-xs uppercase tracking-[0.25em] text-[#8a8580]">
+          {formatDate(post.published_at)}
+        </time>
+      </header>
 
       {post.cover_image && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={post.cover_image}
           alt={post.title}
-          className="w-full rounded-lg mb-8"
+          className="w-full mb-12"
         />
       )}
 
@@ -76,6 +83,8 @@ export default async function PostPage({
         isLoggedIn={!!user}
         comments={comments ?? []}
       />
-    </article>
+      </article>
+      </div>
+    </PageTransition>
   );
 }

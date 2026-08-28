@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getAdminUser } from "@/lib/server-auth";
 import { slugify } from "@/lib/utils";
+import { DEFAULT_CATEGORY } from "@/lib/categories";
 import type { ActionState } from "@/lib/types";
 
 export async function savePost(
@@ -20,6 +21,8 @@ export async function savePost(
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const coverImage = String(formData.get("coverImage") ?? "").trim();
   const content = String(formData.get("content") ?? "");
+  const category =
+    String(formData.get("category") ?? "").trim() || DEFAULT_CATEGORY;
   const action = String(formData.get("action") ?? "draft");
 
   if (!title) return { error: "请填写标题" };
@@ -35,6 +38,7 @@ export async function savePost(
     excerpt: excerpt || null,
     cover_image: coverImage || null,
     content,
+    category,
     status,
   };
 

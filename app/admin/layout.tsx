@@ -26,5 +26,17 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {/* 后台背景：桌面 1547 图铺满视口 */}
+      <div
+        aria-hidden
+        className="fixed inset-0 z-0 bg-cover bg-center"
+        style={{ backgroundImage: 'url("/media/admin-bg.jpg")' }}
+      />
+      <div className="relative z-10 max-w-3xl mx-auto px-4 pt-24 pb-8">
+        {children}
+      </div>
+    </>
+  );
 }

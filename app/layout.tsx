@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { ClickParticles } from "@/components/effects/ClickParticles";
+import { HomeBackgrounds } from "@/components/effects/HomeBackgrounds";
+import { Footer } from "@/components/Footer";
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "我的博客";
 
@@ -21,12 +24,12 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8">
-          {children}
-        </main>
-        <footer className="border-t border-gray-200 py-6 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} {siteName}
-        </footer>
+        <div className="relative flex flex-1 flex-col">
+          <HomeBackgrounds />
+          <main className="relative z-10 flex-1 w-full">{children}</main>
+          <Footer />
+        </div>
+        <ClickParticles />
       </body>
     </html>
   );

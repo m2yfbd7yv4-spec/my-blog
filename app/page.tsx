@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { FeatureParticles } from "@/components/effects/FeatureParticles";
 import { WatercolorWash } from "@/components/effects/WatercolorWash";
 import { PaperCard } from "@/components/effects/PaperCard";
-import { GuestbookDanmaku } from "@/components/effects/GuestbookDanmaku";
+import { GuestbookList } from "@/components/effects/GuestbookList";
 import { GuestbookForm } from "@/components/GuestbookForm";
 import type { GuestbookMessageDisplay } from "@/lib/types";
 import { PageTransition } from "@/components/PageTransition";
@@ -27,7 +27,6 @@ export default async function HomePage() {
     .select("id, content, created_at, profiles(username)")
     .eq("status", "approved")
     .order("created_at", { ascending: false })
-    .limit(30)
     .returns<GuestbookMessageDisplay[]>();
 
   const {
@@ -194,7 +193,7 @@ export default async function HomePage() {
             </span>
             <span className="h-px flex-1 bg-[#a06a66]" />
           </div>
-          <GuestbookDanmaku messages={messages ?? []} />
+          <GuestbookList messages={messages ?? []} />
           <GuestbookForm isLoggedIn={!!user} />
         </div>
       </section>

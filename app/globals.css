@@ -267,59 +267,6 @@ body {
   }
 }
 
-/* ========== 留言板弹幕 ========== */
-@keyframes danmaku-move {
-  0% {
-    left: 100%;
-  }
-  100% {
-    left: -100%;
-  }
-}
-.danmaku-stage {
-  position: relative;
-  height: 11rem;
-  overflow: hidden;
-  pointer-events: none;
-}
-.danmaku-item {
-  position: absolute;
-  left: 100%;
-  top: 0;
-  white-space: nowrap;
-  font-family: "Songti SC", "Noto Serif SC", "STSong", "SimSun", serif;
-  font-size: 1.05rem;
-  color: #2b1414;
-  opacity: 1;
-  will-change: left;
-  animation-name: danmaku-move;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-.danmaku-name {
-  margin-right: 0.6em;
-  font-size: 0.72em;
-  letter-spacing: 0.12em;
-  color: #6b3b38;
-}
-/* 减弱动态效果：弹幕改为静态列表 */
-@media (prefers-reduced-motion: reduce) {
-  .danmaku-stage {
-    position: static;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .danmaku-item {
-    position: static;
-    left: auto;
-    white-space: normal;
-    animation: none;
-    opacity: 0.9;
-  }
-}
-
 /* ========== 花体英文（截图手写感） ========== */
 .font-script {
   font-family: "Apple Chancery", "Snell Roundhand", "Zapfino", cursive;

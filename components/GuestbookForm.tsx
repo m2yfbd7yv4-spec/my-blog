@@ -41,7 +41,7 @@ export function GuestbookForm({ isLoggedIn }: { isLoggedIn: boolean }) {
             <button
               type="submit"
               disabled={pending}
-              className="font-display shrink-0 text-sm uppercase tracking-[0.15em] text-[#2b1414] border-b border-[#2b1414] pb-1 hover:text-[#7a3533] hover:border-[#7a3533] disabled:opacity-50"
+              className="font-display shrink-0 text-sm uppercase tracking-[0.15em] text-white border-b border-white pb-1 hover:text-white/70 hover:border-white/70 disabled:opacity-50"
             >
               {pending ? "發送中…" : "發送"}
             </button>

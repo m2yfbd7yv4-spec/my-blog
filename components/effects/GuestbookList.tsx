@@ -27,7 +27,7 @@ export function GuestbookList({
       <ul className="divide-y divide-[#e7d3d0]">
         {visible.map((m) => (
           <li key={m.id} className="flex items-baseline gap-3 py-3 text-sm">
-            <span className="shrink-0 font-medium text-[#6b3b38]">
+            <span className="shrink-0 text-xs font-light text-white">
               {m.profiles?.username || "匿名"}
             </span>
             <span className="min-w-0 break-words text-[#2b1414]">

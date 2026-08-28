@@ -94,6 +94,33 @@ export default async function HomePage() {
   ];
   const testPosts = posts && posts.length > 0 ? posts : MOCK_POSTS;
 
+  // ==== ⚠️ 临时测试数据：本地预览留言板列表（默认10条 + 展开）用，测试完删除 ====
+  const MOCK_MESSAGES: GuestbookMessageDisplay[] = [
+    { id: "gm-1", content: "好喜欢这里的排版，留言板变成静态列表清爽多了。", created_at: "2026-08-29T09:20:00Z", profiles: { username: "小雨" } },
+    { id: "gm-2", content: "第一篇测试留言，看看显示效果～", created_at: "2026-08-29T08:05:00Z", profiles: { username: "阿哲" } },
+    { id: "gm-3", content: "从朋友的博客转过来，这个复古风太好看了。", created_at: "2026-08-29T06:40:00Z", profiles: { username: "林深" } },
+    { id: "gm-4", content: "山间午后的咖啡香那篇，读完想去山里住几天。", created_at: "2026-08-28T22:15:00Z", profiles: { username: "山茶" } },
+    { id: "gm-5", content: "字体做旧得刚刚好，很有质感。", created_at: "2026-08-28T19:30:00Z", profiles: { username: null } },
+    { id: "gm-6", content: "留言板终于不卡了，之前弹幕滚得我头晕哈哈。", created_at: "2026-08-28T16:00:00Z", profiles: { username: "墨白" } },
+    { id: "gm-7", content: "期待更多文章更新，会常来逛逛。", created_at: "2026-08-28T12:45:00Z", profiles: { username: "晚风" } },
+    { id: "gm-8", content: "关于阅读的那篇写得真好，节奏感像在呼吸。", created_at: "2026-08-28T09:10:00Z", profiles: { username: "一禾" } },
+    { id: "gm-9", content: "颜色搭配很舒服，暖色底配酒红下半段。", created_at: "2026-08-27T23:00:00Z", profiles: { username: null } },
+    { id: "gm-10", content: "测试一下长一点的留言，看看换行和排版会不会乱掉，希望一切正常。", created_at: "2026-08-27T18:20:00Z", profiles: { username: "北屿" } },
+    { id: "gm-11", content: "你好呀，路过留个言，祝博主写作顺利。", created_at: "2026-08-27T14:05:00Z", profiles: { username: "南乔" } },
+    { id: "gm-12", content: "城市散步地图那篇，让我想起老家的小巷。", created_at: "2026-08-27T10:30:00Z", profiles: { username: "青栀" } },
+    { id: "gm-13", content: "网站加载挺快的，图片也清晰。", created_at: "2026-08-26T21:40:00Z", profiles: { username: null } },
+    { id: "gm-14", content: "这个太阳散落的背景动画很有意思，盯着看了好久。", created_at: "2026-08-26T17:55:00Z", profiles: { username: "枕流" } },
+    { id: "gm-15", content: "一封信写给十年后的自己，读到那句「记得你为什么出发」有点感动。", created_at: "2026-08-26T12:00:00Z", profiles: { username: "秋拾" } },
+    { id: "gm-16", content: "手冲咖啡入门指南很实用，周末照着试了一下。", created_at: "2026-08-26T08:25:00Z", profiles: { username: null } },
+    { id: "gm-17", content: "雨天的爵士歌单，正合适今天这种下雨天。", created_at: "2026-08-25T22:50:00Z", profiles: { username: "半夏" } },
+    { id: "gm-18", content: "写作是与自己的对话，深有同感，我也是靠写日记整理思绪。", created_at: "2026-08-25T16:15:00Z", profiles: { username: "拾光" } },
+    { id: "gm-19", content: "从搜索进来的，收藏了，有空慢慢看。", created_at: "2026-08-25T11:35:00Z", profiles: { username: null } },
+    { id: "gm-20", content: "最后一篇测试，凑满二十条，看看「展开全部」按钮长啥样。", created_at: "2026-08-25T07:00:00Z", profiles: { username: "时雨" } },
+  ];
+  // 只在本地开发环境（npm run dev）强制显示 20 条假留言，方便预览「默认10条 + 展开」效果；线上始终显示真实留言
+  const testMessages =
+    process.env.NODE_ENV === "development" ? MOCK_MESSAGES : (messages ?? []);
+
   return (
     <PageTransition>
       {/* 鱼群（跟鼠标）：固定铺满，位于内容之下 */}
@@ -188,12 +215,12 @@ export default async function HomePage() {
         <WatercolorWash />
         <div className="relative z-10">
           <div className="flex items-baseline gap-4 mb-10">
-            <span className="text-xs uppercase tracking-[0.3em] font-bold text-[#3d1f1f]">
+            <span className="text-xs uppercase tracking-[0.3em] font-bold text-[#c0a493]">
               留言板
             </span>
             <span className="h-px flex-1 bg-[#a06a66]" />
           </div>
-          <GuestbookList messages={messages ?? []} />
+          <GuestbookList messages={testMessages} />
           <GuestbookForm isLoggedIn={!!user} />
         </div>
       </section>

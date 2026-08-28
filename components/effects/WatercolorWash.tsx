@@ -44,7 +44,7 @@ export function WatercolorWash() {
             gradientUnits="userSpaceOnUse"
             cx="50"
             cy="48"
-            r="46"
+            r="48"
           >
             <stop offset="0%" stopColor="#f1c8c0" stopOpacity="0.7" />
             <stop offset="100%" stopColor="#e8b2ab" stopOpacity="0" />
@@ -55,7 +55,7 @@ export function WatercolorWash() {
             gradientUnits="userSpaceOnUse"
             cx="46"
             cy="52"
-            r="34"
+            r="42"
           >
             <stop offset="0%" stopColor="#e3a6a2" stopOpacity="0.75" />
             <stop offset="100%" stopColor="#d98f92" stopOpacity="0" />
@@ -66,14 +66,14 @@ export function WatercolorWash() {
             gradientUnits="userSpaceOnUse"
             cx="54"
             cy="45"
-            r="24"
+            r="38"
           >
             <stop offset="0%" stopColor="#d18488" stopOpacity="0.8" />
             <stop offset="100%" stopColor="#c16e75" stopOpacity="0" />
           </radialGradient>
 
           {/* 三级毛边过滤器：低频大波浪 + 高频细碎炸毛，逐层加强 */}
-          <filter id="wcF1" x="-30%" y="-30%" width="160%" height="160%">
+          <filter id="wcF1" x="-50%" y="-50%" width="200%" height="200%">
             <feTurbulence
               type="fractalNoise"
               baseFrequency="0.02"
@@ -83,7 +83,7 @@ export function WatercolorWash() {
             />
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.11"
+              baseFrequency="0.13"
               numOctaves="2"
               seed="21"
               result="n2"
@@ -91,7 +91,7 @@ export function WatercolorWash() {
             <feDisplacementMap
               in="SourceGraphic"
               in2="n1"
-              scale="32"
+              scale="50"
               xChannelSelector="R"
               yChannelSelector="G"
               result="d1"
@@ -99,12 +99,12 @@ export function WatercolorWash() {
             <feDisplacementMap
               in="d1"
               in2="n2"
-              scale="18"
+              scale="30"
               xChannelSelector="R"
               yChannelSelector="G"
             />
           </filter>
-          <filter id="wcF2" x="-30%" y="-30%" width="160%" height="160%">
+          <filter id="wcF2" x="-50%" y="-50%" width="200%" height="200%">
             <feTurbulence
               type="fractalNoise"
               baseFrequency="0.024"
@@ -114,7 +114,7 @@ export function WatercolorWash() {
             />
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.14"
+              baseFrequency="0.17"
               numOctaves="3"
               seed="37"
               result="n2"
@@ -122,7 +122,7 @@ export function WatercolorWash() {
             <feDisplacementMap
               in="SourceGraphic"
               in2="n1"
-              scale="40"
+              scale="60"
               xChannelSelector="R"
               yChannelSelector="G"
               result="d1"
@@ -130,12 +130,12 @@ export function WatercolorWash() {
             <feDisplacementMap
               in="d1"
               in2="n2"
-              scale="24"
+              scale="38"
               xChannelSelector="R"
               yChannelSelector="G"
             />
           </filter>
-          <filter id="wcF3" x="-30%" y="-30%" width="160%" height="160%">
+          <filter id="wcF3" x="-50%" y="-50%" width="200%" height="200%">
             <feTurbulence
               type="fractalNoise"
               baseFrequency="0.028"
@@ -145,7 +145,7 @@ export function WatercolorWash() {
             />
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.18"
+              baseFrequency="0.21"
               numOctaves="3"
               seed="52"
               result="n2"
@@ -153,7 +153,7 @@ export function WatercolorWash() {
             <feDisplacementMap
               in="SourceGraphic"
               in2="n1"
-              scale="42"
+              scale="66"
               xChannelSelector="R"
               yChannelSelector="G"
               result="d1"
@@ -161,7 +161,7 @@ export function WatercolorWash() {
             <feDisplacementMap
               in="d1"
               in2="n2"
-              scale="26"
+              scale="44"
               xChannelSelector="R"
               yChannelSelector="G"
             />

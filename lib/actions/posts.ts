@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser } from "@/lib/server-auth";
 import { slugify } from "@/lib/utils";
 import { DEFAULT_CATEGORY } from "@/lib/categories";
@@ -17,6 +16,8 @@ export async function savePost(
 ): Promise<ActionState> {
   const user = await getAdminUser();
   if (!user) return { error: "无权限" };
+
+  const supabase = await createClient();
 
   const id = String(formData.get("id") ?? "");
   const title = String(formData.get("title") ?? "").trim();
@@ -54,17 +55,15 @@ export async function savePost(
       };
     }
     const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-    const admin = createAdminClient();
-    const { error: upErr } = await admin.storage
+    const { error: upErr } = await supabase.storage
       .from("posts")
       .upload(path, coverFile, { contentType: coverFile.type });
     if (upErr) return { error: "封面图上传失败，请稍后再试" };
-    finalCoverImage = admin.storage
+    finalCoverImage = supabase.storage
       .from("posts")
       .getPublicUrl(path).data.publicUrl;
   }
 
-  const supabase = await createClient();
   const base = {
     title,
     slug,

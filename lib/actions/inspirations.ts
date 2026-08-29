@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser } from "@/lib/server-auth";
 import type { ActionState } from "@/lib/types";
 
@@ -15,6 +14,8 @@ export async function addInspiration(
 ): Promise<ActionState> {
   const user = await getAdminUser();
   if (!user) return { error: "仅站长可记录灵感" };
+
+  const supabase = await createClient();
 
   const content = String(formData.get("content") ?? "").trim();
   if (!content) return { error: "内容不能为空" };
@@ -29,17 +30,15 @@ export async function addInspiration(
 
     const ext = (image.name.split(".").pop() || "jpg").toLowerCase();
     const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-    const admin = createAdminClient();
-    const { error: upErr } = await admin.storage
+    const { error: upErr } = await supabase.storage
       .from("inspirations")
       .upload(path, image, { contentType: image.type });
     if (upErr) return { error: "图片上传失败，请稍后再试" };
-    image_url = admin.storage
+    image_url = supabase.storage
       .from("inspirations")
       .getPublicUrl(path).data.publicUrl;
   }
 
-  const supabase = await createClient();
   const { error } = await supabase
     .from("inspirations")
     .insert({ author_id: user.id, content, image_url });

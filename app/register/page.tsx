@@ -6,6 +6,7 @@ import { register } from "@/lib/actions/auth";
 import type { ActionState } from "@/lib/types";
 import { PageTransition } from "@/components/PageTransition";
 import { FeatureParticles } from "@/components/effects/FeatureParticles";
+import { TurnstileField } from "@/components/TurnstileField";
 
 const initialState: ActionState = {};
 
@@ -107,6 +108,8 @@ export default function RegisterPage() {
                     {state.error}
                   </p>
                 )}
+
+                <TurnstileField />
 
                 <button
                   type="submit"

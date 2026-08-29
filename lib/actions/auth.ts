@@ -21,13 +21,21 @@ export async function login(
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/");
+  const captchaToken = String(formData.get("captchaToken") ?? "");
 
   if (!email || !password) {
     return { error: "请输入邮箱和密码" };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    options: captchaToken ? { captchaToken } : undefined,
+  });
   if (error) {
+    if (/captcha/i.test(error.message)) {
+      return { error: "人机验证未通过，请稍候重试" };
+    }
     return { error: "邮箱或密码错误，请重试" };
   }
 
@@ -45,6 +53,7 @@ export async function register(
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
   const username = String(formData.get("username") ?? "").trim();
+  const captchaToken = String(formData.get("captchaToken") ?? "");
 
   if (!email || !password) return { error: "请输入邮箱和密码" };
   if (password.length < 8) return { error: "密码至少需要 8 位" };
@@ -56,10 +65,16 @@ export async function register(
     options: {
       emailRedirectTo: `${await getBaseUrl()}/auth/confirm`,
       data: { username },
+      ...(captchaToken ? { captchaToken } : {}),
     },
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (/captcha/i.test(error.message)) {
+      return { error: "人机验证未通过，请稍候重试" };
+    }
+    return { error: error.message };
+  }
 
   return {
     success: "注册成功！请去邮箱查收验证邮件，点击链接完成验证后再登录。",

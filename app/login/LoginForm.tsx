@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { login } from "@/lib/actions/auth";
+import { TurnstileField } from "@/components/TurnstileField";
 import type { ActionState } from "@/lib/types";
 
 const initialState: ActionState = {};
@@ -69,6 +70,8 @@ export function LoginForm({
             {state.error}
           </p>
         )}
+
+        <TurnstileField />
 
         <button
           type="submit"

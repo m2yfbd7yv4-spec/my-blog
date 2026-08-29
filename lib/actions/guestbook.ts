@@ -82,5 +82,5 @@ export async function moderateGuestbookMessage(
   }
 
   revalidatePath("/admin/comments");
-  revalidatePath("/guestbook");
+  revalidatePath("/");
 }

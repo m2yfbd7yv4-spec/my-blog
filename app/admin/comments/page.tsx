@@ -102,6 +102,16 @@ export default async function CommentsPage() {
                 {c.posts?.title || "已删除文章"}》 · {formatDate(c.created_at)}
               </div>
               <p className="whitespace-pre-wrap text-gray-700">{c.content}</p>
+              <form action={moderateComment} className="mt-3">
+                <input type="hidden" name="id" value={c.id} />
+                <button
+                  name="action"
+                  value="delete"
+                  className="rounded-md bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+                >
+                  删除
+                </button>
+              </form>
             </li>
           ))}
         </ul>
@@ -169,6 +179,16 @@ export default async function CommentsPage() {
                 {m.profiles?.username || "用户"} · {formatDate(m.created_at)}
               </div>
               <p className="whitespace-pre-wrap text-gray-700">{m.content}</p>
+              <form action={moderateGuestbookMessage} className="mt-3">
+                <input type="hidden" name="id" value={m.id} />
+                <button
+                  name="action"
+                  value="delete"
+                  className="rounded-md bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+                >
+                  删除
+                </button>
+              </form>
             </li>
           ))}
         </ul>

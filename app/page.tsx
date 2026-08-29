@@ -132,7 +132,7 @@ export default async function HomePage() {
       {/* Hero：站名 + 全出血主视觉 */}
         <section className="pt-20 pb-10">
           <div className="max-w-3xl mx-auto px-4">
-            <h1 className="font-display text-5xl md:text-7xl tracking-[0.05em] text-[#1a1a1a] [text-shadow:0_2px_8px_rgba(0,0,0,0.22)]">
+            <h1 className="font-display text-5xl md:text-7xl tracking-[0.05em] uppercase text-[#1a1a1a] [text-shadow:0_2px_8px_rgba(0,0,0,0.22)]">
               {siteName}
             </h1>
             <p className="mt-5 text-xs tracking-[0.35em] text-[#8a8580]">

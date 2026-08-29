@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getAdminUser } from "@/lib/server-auth";
+import { beijingDayStart } from "@/lib/utils";
 import type { ActionState } from "@/lib/types";
 
 export async function submitComment(
@@ -44,9 +45,8 @@ export async function submitComment(
     }
   }
 
-  // 每日限额：同一用户每天最多 10 条评论
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+  // 每日限额：同一用户每天最多 10 条评论（按北京时间凌晨 12 点重置）
+  const startOfDay = beijingDayStart();
   const { count: dailyCount } = await supabase
     .from("comments")
     .select("id", { count: "exact", head: true })

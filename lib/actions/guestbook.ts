@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getAdminUser } from "@/lib/server-auth";
+import { beijingDayStart } from "@/lib/utils";
 import type { ActionState } from "@/lib/types";
 
 // 提交留言板留言（需登录、30 秒限频、审核通过后显示）
@@ -44,9 +45,8 @@ export async function submitGuestbookMessage(
     }
   }
 
-  // 每日限额：同一用户每天最多 10 条留言
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+  // 每日限额：同一用户每天最多 10 条留言（按北京时间凌晨 12 点重置）
+  const startOfDay = beijingDayStart();
   const { count: dailyCount } = await supabase
     .from("guestbook_messages")
     .select("id", { count: "exact", head: true })

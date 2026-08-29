@@ -22,6 +22,19 @@ export function slugify(input: string): string {
   return s;
 }
 
+// 北京时间（UTC+8，无夏令时）当天 00:00 对应的 UTC 时间。
+// Vercel 服务器跑在 UTC，直接用 setHours(0,0,0,0) 会按 UTC 零点重置（= 北京时间早上 8 点）。
+// 这里手动换算，让「每天限额」在北京时间凌晨 12 点重置。
+export function beijingDayStart(now: Date = new Date()): Date {
+  const shifted = new Date(now.getTime() + 8 * 60 * 60 * 1000); // 得到北京"墙上时间"
+  const utcMidnight = Date.UTC(
+    shifted.getUTCFullYear(),
+    shifted.getUTCMonth(),
+    shifted.getUTCDate(),
+  );
+  return new Date(utcMidnight - 8 * 60 * 60 * 1000);
+}
+
 // 格式化日期为中文（如「2026年8月26日」）
 export function formatDate(date: string | null | undefined): string {
   if (!date) return "";

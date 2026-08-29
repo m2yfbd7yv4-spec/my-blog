@@ -12,7 +12,7 @@ import type { GuestbookMessageDisplay } from "@/lib/types";
 import { PageTransition } from "@/components/PageTransition";
 import { FishSchool } from "@/components/effects/FishSchool";
 
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "我的博客";
+const siteName = "echo of eve";
 
 export default async function HomePage() {
   const supabase = await createClient();

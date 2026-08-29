@@ -5,7 +5,7 @@ import { ClickParticles } from "@/components/effects/ClickParticles";
 import { HomeBackgrounds } from "@/components/effects/HomeBackgrounds";
 import { Footer } from "@/components/Footer";
 
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "我的博客";
+const siteName = "echo of eve";
 
 export const metadata: Metadata = {
   title: {

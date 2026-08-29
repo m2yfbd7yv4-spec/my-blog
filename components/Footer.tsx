@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "我的博客";
+const siteName = "echo of eve";
 
 // 页脚：首页时坐落在酒红背景上（浅色文字），其它页维持白底深灰。
 export function Footer() {

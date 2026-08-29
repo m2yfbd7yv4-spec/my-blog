@@ -799,6 +799,19 @@ body {
   background-position: center;
 }
 
+/* ========== 博文页背景：桌面截图铺满 ========== */
+.post-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background-image: url("/post-bg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
 /* ========== 登录页背景：桌面截图铺满 ========== */
 .login-bg {
   position: fixed;
@@ -881,6 +894,36 @@ body {
   box-shadow:
     0 14px 36px rgba(60, 45, 30, 0.18),
     inset 0 0 0 1px rgba(120, 88, 56, 0.10);
+}
+
+/* ========== 毛边纸按钮：纸纹理 + 不规则毛边（发表评论用） ========== */
+.paper-btn {
+  background:
+    url("/paper-texture.jpg") center / cover no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #fbf2e4 100%);
+  background-blend-mode: multiply, normal;
+  -webkit-mask-image: url("/paper-mask.svg");
+  mask-image: url("/paper-mask.svg");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  filter: drop-shadow(0 3px 8px rgba(60, 45, 30, 0.25));
+}
+
+/* ========== 胶带纸面板：半透明和纸胶带质感 + 毛边 ========== */
+.washi-tape-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("/washi-tape.png");
+  background-size: cover;
+  background-position: center;
+  -webkit-mask-image: url("/paper-mask.svg");
+  mask-image: url("/paper-mask.svg");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 .overlay-backdrop {
   background: rgba(20, 16, 12, 0.45);

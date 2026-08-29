@@ -35,6 +35,19 @@ export default function AboutPage() {
               chy19883580787@qq.com
             </a>
           </p>
+
+          <div className="pt-8 border-t border-[#e0d8ca] space-y-4">
+            <p>
+              Welcome to my little corner of inspiration.
+              <br />
+              Kind words and gentle thoughts are always welcomed.
+            </p>
+            <p className="text-sm text-[#8a8580]">
+              © 2026 Eve Chen | All original content reserved.
+              <br />
+              All comments are moderated before publication.
+            </p>
+          </div>
         </div>
       </div>
       </div>

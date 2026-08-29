@@ -3,10 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser } from "@/lib/server-auth";
 import { slugify } from "@/lib/utils";
 import { DEFAULT_CATEGORY } from "@/lib/categories";
 import type { ActionState } from "@/lib/types";
+
+const MAX_COVER_BYTES = 8 * 1024 * 1024; // 封面图上限 8MB
 
 export async function savePost(
   _prevState: ActionState,
@@ -31,12 +34,34 @@ export async function savePost(
   const status = action === "publish" ? "published" : "draft";
   if (!slug) slug = slugify(title);
 
+  // 封面图：优先用从访达上传的文件，否则用填写的链接
+  let finalCoverImage = coverImage;
+  const coverFile = formData.get("coverImageFile");
+  if (coverFile instanceof File && coverFile.size > 0) {
+    if (!coverFile.type.startsWith("image/")) {
+      return { error: "封面图只能是图片文件" };
+    }
+    if (coverFile.size > MAX_COVER_BYTES) {
+      return { error: "封面图过大（最多 8MB）" };
+    }
+    const ext = (coverFile.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+    const admin = createAdminClient();
+    const { error: upErr } = await admin.storage
+      .from("posts")
+      .upload(path, coverFile, { contentType: coverFile.type });
+    if (upErr) return { error: "封面图上传失败，请稍后再试" };
+    finalCoverImage = admin.storage
+      .from("posts")
+      .getPublicUrl(path).data.publicUrl;
+  }
+
   const supabase = await createClient();
   const base = {
     title,
     slug,
     excerpt: excerpt || null,
-    cover_image: coverImage || null,
+    cover_image: finalCoverImage || null,
     content,
     category,
     status,

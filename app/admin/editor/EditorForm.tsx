@@ -17,11 +17,13 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
   const [slugTouched, setSlugTouched] = useState(!!initialPost);
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? "");
   const [coverImage, setCoverImage] = useState(initialPost?.cover_image ?? "");
+  const [coverFilePreview, setCoverFilePreview] = useState<string | null>(null);
   const [content, setContent] = useState(initialPost?.content ?? "");
   const [category, setCategory] = useState(
     initialPost?.category ?? DEFAULT_CATEGORY,
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const coverFileRef = useRef<HTMLInputElement>(null);
 
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value;
@@ -122,16 +124,54 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
 
         <div>
           <label htmlFor="coverImage" className="block text-sm font-medium mb-1">
-            封面图链接（可选）
+            封面图（可选）
           </label>
           <input
             id="coverImage"
             name="coverImage"
             value={coverImage}
-            onChange={(e) => setCoverImage(e.target.value)}
+            onChange={(e) => {
+              setCoverImage(e.target.value);
+              setCoverFilePreview(null);
+              if (coverFileRef.current) coverFileRef.current.value = "";
+            }}
             className={inputCls}
-            placeholder="https://…"
+            placeholder="粘贴图片链接，或点下方「从访达选择」上传"
           />
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <label className="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">
+              从访达选择图片
+              <input
+                ref={coverFileRef}
+                type="file"
+                name="coverImageFile"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) {
+                    setCoverImage("");
+                    setCoverFilePreview(URL.createObjectURL(f));
+                  } else {
+                    setCoverFilePreview(null);
+                  }
+                }}
+              />
+            </label>
+            {coverFilePreview && (
+              <span className="text-xs text-gray-500">
+                已选本地图片，提交后会用它作封面
+              </span>
+            )}
+          </div>
+          {coverFilePreview && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={coverFilePreview}
+              alt="封面预览"
+              className="mt-2 h-32 w-auto rounded-md border border-gray-200 object-cover"
+            />
+          )}
         </div>
 
         <div>

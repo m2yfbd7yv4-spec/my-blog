@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { submitGuestbookMessage } from "@/lib/actions/guestbook";
 import type { ActionState } from "@/lib/types";
 
@@ -13,6 +13,7 @@ export function GuestbookForm({ isLoggedIn }: { isLoggedIn: boolean }) {
     submitGuestbookMessage,
     initialState,
   );
+  const [content, setContent] = useState("");
 
   return (
     <section className="mt-10 border-t border-[#a06a66] pt-8">
@@ -35,6 +36,7 @@ export function GuestbookForm({ isLoggedIn }: { isLoggedIn: boolean }) {
               name="content"
               required
               maxLength={200}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="說點什麼，飄上屏幕…"
               className="flex-1 bg-transparent border-b border-[#a06a66] py-2 text-[#2b1414] placeholder-[#6b3b38] outline-none focus:border-[#7a3533]"
             />
@@ -57,6 +59,9 @@ export function GuestbookForm({ isLoggedIn }: { isLoggedIn: boolean }) {
             後即可留言
           </p>
         )}
+        <p className="mt-2 text-right text-xs text-[#6b3b38]">
+          {content.length}/200
+        </p>
         {state?.error && (
           <p className="mt-3 text-sm text-red-800">{state.error}</p>
         )}

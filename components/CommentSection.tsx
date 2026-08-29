@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { submitComment } from "@/lib/actions/comments";
 import { formatDate } from "@/lib/utils";
 import type { ActionState, CommentDisplay } from "@/lib/types";
@@ -22,6 +22,7 @@ export function CommentSection({
     submitComment,
     initialState,
   );
+  const [content, setContent] = useState("");
 
   return (
     <section className="mt-10 max-w-xl mx-auto">
@@ -47,9 +48,13 @@ export function CommentSection({
                 required
                 maxLength={2000}
                 rows={4}
+                onChange={(e) => setContent(e.target.value)}
                 placeholder="写下你的评论…"
                 className="w-full bg-transparent px-3 py-2 text-sm focus:outline-none"
               />
+              <div className="text-right text-xs text-[#8a8580]">
+                {content.length}/2000
+              </div>
               {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
               {state?.success && (
                 <p className="text-sm text-green-600">{state.success}</p>

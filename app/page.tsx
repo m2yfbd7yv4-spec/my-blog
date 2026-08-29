@@ -93,6 +93,9 @@ export default async function HomePage() {
     },
   ];
   const testPosts = posts && posts.length > 0 ? posts : MOCK_POSTS;
+  // 两列瀑布流：奇偶拆分。左列放第 1、3、5… 篇，右列放第 2、4、6… 篇（避免 CSS columns 在部分浏览器把右列内容吞掉）
+  const leftPosts = testPosts.filter((_, i) => i % 2 === 0);
+  const rightPosts = testPosts.filter((_, i) => i % 2 === 1);
 
   // ==== ⚠️ 临时测试数据：本地预览留言板列表（默认10条 + 展开）用，测试完删除 ====
   const MOCK_MESSAGES: GuestbookMessageDisplay[] = [
@@ -194,14 +197,25 @@ export default async function HomePage() {
           <span className="h-px flex-1 bg-[#8a5a4e]" />
         </div>
         {testPosts.length > 0 ? (
-          <div className="columns-1 md:columns-2 gap-8">
-            {testPosts.map((post) => (
-              <ScrollReveal key={post.id} className="mb-8 break-inside-avoid">
-                <PaperCard floating>
-                  <PostCard post={post} />
-                </PaperCard>
-              </ScrollReveal>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className="flex flex-col gap-8">
+              {leftPosts.map((post) => (
+                <ScrollReveal key={post.id}>
+                  <PaperCard floating>
+                    <PostCard post={post} />
+                  </PaperCard>
+                </ScrollReveal>
+              ))}
+            </div>
+            <div className="flex flex-col gap-8">
+              {rightPosts.map((post) => (
+                <ScrollReveal key={post.id}>
+                  <PaperCard floating>
+                    <PostCard post={post} />
+                  </PaperCard>
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="py-16 text-center text-sm text-[#c0a493]">

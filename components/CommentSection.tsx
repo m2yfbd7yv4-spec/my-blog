@@ -46,14 +46,14 @@ export function CommentSection({
               <textarea
                 name="content"
                 required
-                maxLength={2000}
+                maxLength={500}
                 rows={4}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="写下你的评论…"
                 className="w-full bg-transparent px-3 py-2 text-sm focus:outline-none"
               />
               <div className="text-right text-xs text-[#8a8580]">
-                {content.length}/2000
+                {content.length}/500
               </div>
               {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
               {state?.success && (

@@ -35,7 +35,7 @@ export function GuestbookForm({ isLoggedIn }: { isLoggedIn: boolean }) {
             <input
               name="content"
               required
-              maxLength={200}
+              maxLength={50}
               onChange={(e) => setContent(e.target.value)}
               placeholder="說點什麼，飄上屏幕…"
               className="flex-1 bg-transparent border-b border-[#a06a66] py-2 text-[#2b1414] placeholder-[#6b3b38] outline-none focus:border-[#7a3533]"
@@ -60,7 +60,7 @@ export function GuestbookForm({ isLoggedIn }: { isLoggedIn: boolean }) {
           </p>
         )}
         <p className="mt-2 text-right text-xs text-[#6b3b38]">
-          {content.length}/200
+          {content.length}/50
         </p>
         {state?.error && (
           <p className="mt-3 text-sm text-red-800">{state.error}</p>

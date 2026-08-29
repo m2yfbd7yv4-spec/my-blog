@@ -27,7 +27,7 @@ export async function submitComment(
   const content = String(formData.get("content") ?? "").trim();
 
   if (!content) return { error: "评论内容不能为空" };
-  if (content.length > 2000) return { error: "评论过长（最多 2000 字）" };
+  if (content.length > 500) return { error: "评论过长（最多 500 字）" };
 
   // 频率限制：同一用户 30 秒内最多发一条
   const { data: recent } = await supabase
@@ -42,6 +42,18 @@ export async function submitComment(
     if (Date.now() - last < 30_000) {
       return { error: "评论太频繁，请稍后再试" };
     }
+  }
+
+  // 每日限额：同一用户每天最多 10 条评论
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const { count: dailyCount } = await supabase
+    .from("comments")
+    .select("id", { count: "exact", head: true })
+    .eq("author_id", user.id)
+    .gte("created_at", startOfDay.toISOString());
+  if ((dailyCount ?? 0) >= 10) {
+    return { error: "今天评论已达上限（每天最多 10 条），明天再来吧" };
   }
 
   const { error } = await supabase

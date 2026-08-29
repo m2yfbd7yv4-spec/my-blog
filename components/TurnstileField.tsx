@@ -21,54 +21,50 @@ const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 const SCRIPT_URL =
   "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
-let scriptPromise: Promise<void> | null = null;
-
-// 只加载一次 Turnstile 脚本（登录/注册页跳转时复用）
-function loadTurnstile(): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
-  if (scriptPromise) return scriptPromise;
-  scriptPromise = new Promise((resolve) => {
-    if (window.turnstile) {
-      resolve();
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = SCRIPT_URL;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => resolve(); // 脚本加载失败也不阻塞表单提交
-    document.head.appendChild(script);
-  });
-  return scriptPromise;
-}
-
 // 人机验证组件：渲染 Turnstile，把拿到的 token 塞进隐藏字段 captchaToken
 export function TurnstileField() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [token, setToken] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (!SITE_KEY || !containerRef.current) return;
     let widgetId: string | undefined;
-    let cancelled = false;
+    // 每个组件用唯一回调名，避免全局命名冲突
+    const onloadName = `__turnstileOnload_${Math.random().toString(36).slice(2)}`;
 
-    loadTurnstile().then(() => {
-      if (cancelled || !containerRef.current) return;
-      window.turnstile?.ready(() => {
-        if (cancelled || !containerRef.current) return;
-        widgetId = window.turnstile!.render(containerRef.current, {
-          sitekey: SITE_KEY,
-          theme: "light",
-          callback: (t: string) => setToken(t),
-          "expired-callback": () => setToken(""),
-          "error-callback": () => setToken(""),
-        });
+    const render = () => {
+      if (!containerRef.current || !window.turnstile) return;
+      widgetId = window.turnstile.render(containerRef.current, {
+        sitekey: SITE_KEY,
+        theme: "light",
+        callback: (token: string) => {
+          if (inputRef.current) inputRef.current.value = token;
+        },
+        "expired-callback": () => {
+          if (inputRef.current) inputRef.current.value = "";
+        },
+        "error-callback": () => setFailed(true),
       });
-    });
+      // render 返回 undefined = 渲染失败（最常见：Cloudflare 里 hostname 没配当前域名）
+      if (!widgetId) setFailed(true);
+    };
+
+    if (window.turnstile) {
+      // API 已就绪（例如登录页跳注册页的客户端导航）：直接渲染
+      render();
+    } else {
+      // 首次：注入脚本，用 onload 回调保证 API 就绪后再渲染
+      (window as any)[onloadName] = render;
+      const s = document.createElement("script");
+      s.src = `${SCRIPT_URL}&onload=${onloadName}`;
+      s.async = true;
+      s.defer = true;
+      document.head.appendChild(s);
+    }
 
     return () => {
-      cancelled = true;
+      delete (window as any)[onloadName];
       if (widgetId) window.turnstile?.remove(widgetId);
     };
   }, []);
@@ -79,7 +75,12 @@ export function TurnstileField() {
   return (
     <div className="min-h-[65px]">
       <div ref={containerRef} />
-      <input type="hidden" name="captchaToken" value={token} />
+      <input ref={inputRef} type="hidden" name="captchaToken" value="" />
+      {failed && (
+        <p className="mt-1 text-xs text-red-600">
+          人机验证加载失败，请刷新重试；若仍失败，请检查 Cloudflare 里该 widget 的域名（Hostname）是否包含当前域名。
+        </p>
+      )}
     </div>
   );
 }

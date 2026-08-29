@@ -75,20 +75,8 @@ export function Waterfall({
 
     let raf = 0;
 
-    // 随滚动淡入淡出：顶部最清晰，往下滚逐渐隐去，往回滚恢复
-    let scrollTarget = 1;
-    let scrollFactor = 1;
-
-    function onScroll() {
-      const fade = Math.max(560, window.innerHeight * 1.6);
-      scrollTarget = Math.max(0, 1 - window.scrollY / fade);
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-
     function tick(now: number) {
       const t = now / 1000;
-      scrollFactor += (scrollTarget - scrollFactor) * 0.1;
 
       // 湿痕淡出：让水珠滑过的痕迹慢慢消失，形成柔和的拖尾
       CTX.globalCompositeOperation = "destination-out";
@@ -97,7 +85,7 @@ export function Waterfall({
       CTX.globalCompositeOperation = "source-over";
 
       for (const d of drops) {
-        const a = d.alpha * scrollFactor; // 滚动淡出后的有效透明度
+        const a = d.alpha; // 固定不随滚动淡出
         // 轻微左右摆动 + 玻璃表面细微的「黏着」晃动
         const sway = Math.sin(t * 0.3 + d.phase) * 0.2 + Math.sin(t * 0.12) * 0.1;
         d.vx += (sway - d.vx) * 0.01;
@@ -135,7 +123,7 @@ export function Waterfall({
         CTX.fill();
 
         // 高光点：左上角一颗亮晶晶的小点
-        CTX.fillStyle = `rgba(255,255,255,${Math.min(0.2, a + 0.05 * scrollFactor)})`;
+        CTX.fillStyle = `rgba(255,255,255,${Math.min(0.2, a + 0.05)})`;
         CTX.beginPath();
         CTX.arc(d.x - d.r * 0.32, d.y - d.r * 0.36, d.r * 0.22, 0, Math.PI * 2);
         CTX.fill();
@@ -149,7 +137,6 @@ export function Waterfall({
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
-      window.removeEventListener("scroll", onScroll);
     };
   }, [count, color]);
 

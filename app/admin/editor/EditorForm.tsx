@@ -18,6 +18,8 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? "");
   const [coverImage, setCoverImage] = useState(initialPost?.cover_image ?? "");
   const [coverFilePreview, setCoverFilePreview] = useState<string | null>(null);
+  const [coverFileError, setCoverFileError] = useState<string | null>(null);
+  const [coverFileName, setCoverFileName] = useState<string | null>(null);
   const [content, setContent] = useState(initialPost?.content ?? "");
   const [category, setCategory] = useState(
     initialPost?.category ?? DEFAULT_CATEGORY,
@@ -133,6 +135,8 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
             onChange={(e) => {
               setCoverImage(e.target.value);
               setCoverFilePreview(null);
+              setCoverFileError(null);
+              setCoverFileName(null);
               if (coverFileRef.current) coverFileRef.current.value = "";
             }}
             className={inputCls}
@@ -145,22 +149,49 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
                 ref={coverFileRef}
                 type="file"
                 name="coverImageFile"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) {
-                    setCoverImage("");
-                    setCoverFilePreview(URL.createObjectURL(f));
-                  } else {
+                  if (!f) {
                     setCoverFilePreview(null);
+                    setCoverFileError(null);
+                    setCoverFileName(null);
+                    return;
                   }
+                  const ok = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/gif",
+                  ];
+                  if (!ok.includes(f.type)) {
+                    setCoverImage("");
+                    setCoverFilePreview(null);
+                    setCoverFileName(null);
+                    setCoverFileError(
+                      f.type === "image/heic" ||
+                        f.type === "image/heif" ||
+                        /\.heic$/i.test(f.name)
+                        ? "这是 HEIC 格式，多数浏览器（如 Chrome）打不开。请用「预览」把照片导出为 JPG 后再上传。"
+                        : `不支持的图片格式（${f.type || f.name}），请改用 JPG / PNG / WebP / GIF。`,
+                    );
+                    if (coverFileRef.current) coverFileRef.current.value = "";
+                    return;
+                  }
+                  setCoverFileError(null);
+                  setCoverImage("");
+                  setCoverFileName(f.name);
+                  setCoverFilePreview(URL.createObjectURL(f));
                 }}
               />
             </label>
-            {coverFilePreview && (
+            {coverFileError && (
+              <span className="text-xs text-red-600">{coverFileError}</span>
+            )}
+            {!coverFileError && coverFilePreview && (
               <span className="text-xs text-gray-500">
-                已选本地图片，提交后会用它作封面
+                已选：{coverFileName}，提交后会用这张图作封面
               </span>
             )}
           </div>

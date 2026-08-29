@@ -45,6 +45,14 @@ export async function savePost(
       return { error: "封面图过大（最多 8MB）" };
     }
     const ext = (coverFile.name.split(".").pop() || "jpg").toLowerCase();
+    if (!["jpg", "jpeg", "png", "webp", "gif"].includes(ext)) {
+      return {
+        error:
+          ext === "heic" || ext === "heif"
+            ? "封面图是 HEIC 格式，浏览器打不开。请先转成 JPG 再上传。"
+            : "封面图格式不支持，请用 JPG / PNG / WebP / GIF。",
+      };
+    }
     const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
     const admin = createAdminClient();
     const { error: upErr } = await admin.storage

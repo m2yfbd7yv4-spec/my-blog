@@ -3,7 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { DeletePostButton } from "@/components/DeletePostButton";
 import { formatDate } from "@/lib/utils";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const sp = await searchParams;
+  const coverFailed = sp.cover === "upload_failed";
   const supabase = await createClient();
 
   const { data: posts } = await supabase
@@ -18,6 +24,11 @@ export default async function AdminPage() {
 
   return (
     <div>
+      {coverFailed && (
+        <p className="mb-6 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+          封面图上传失败，文章已保存但未附封面图。可稍后在编辑页重新上传封面图。
+        </p>
+      )}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold">管理后台</h1>
         <div className="flex gap-3 text-sm">

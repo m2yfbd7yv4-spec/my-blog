@@ -8,7 +8,7 @@ import { slugify } from "@/lib/utils";
 import { DEFAULT_CATEGORY } from "@/lib/categories";
 import type { ActionState } from "@/lib/types";
 
-const MAX_COVER_BYTES = 8 * 1024 * 1024; // 封面图上限 8MB
+const MAX_COVER_BYTES = 4 * 1024 * 1024; // 封面图上限 4MB（Vercel 请求体上限约 4.5MB，留余量）
 
 export async function savePost(
   _prevState: ActionState,
@@ -37,13 +37,14 @@ export async function savePost(
 
   // 封面图：优先用从访达上传的文件，否则用填写的链接
   let finalCoverImage = coverImage;
+  let coverUploadFailed = false;
   const coverFile = formData.get("coverImageFile");
   if (coverFile instanceof File && coverFile.size > 0) {
     if (!coverFile.type.startsWith("image/")) {
       return { error: "封面图只能是图片文件" };
     }
     if (coverFile.size > MAX_COVER_BYTES) {
-      return { error: "封面图过大（最多 8MB）" };
+      return { error: "封面图过大（最多 4MB，请先压缩图片）" };
     }
     const ext = (coverFile.name.split(".").pop() || "jpg").toLowerCase();
     if (!["jpg", "jpeg", "png", "webp", "gif"].includes(ext)) {
@@ -58,10 +59,14 @@ export async function savePost(
     const { error: upErr } = await supabase.storage
       .from("posts")
       .upload(path, coverFile, { contentType: coverFile.type });
-    if (upErr) return { error: "封面图上传失败，请稍后再试" };
-    finalCoverImage = supabase.storage
-      .from("posts")
-      .getPublicUrl(path).data.publicUrl;
+    if (upErr) {
+      // 上传失败（常见：存储桶还没建好）不阻断发文——文章照常保存，只是没有封面图
+      coverUploadFailed = true;
+    } else {
+      finalCoverImage = supabase.storage
+        .from("posts")
+        .getPublicUrl(path).data.publicUrl;
+    }
   }
 
   const base = {
@@ -114,7 +119,7 @@ export async function savePost(
   }
 
   revalidatePath("/");
-  redirect("/admin");
+  redirect(coverUploadFailed ? "/admin?cover=upload_failed" : "/admin");
 }
 
 export async function deletePost(

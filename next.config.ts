@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      // Server Action 请求体默认上限 1MB，上传封面图（图片动辄数 MB）会直接 500。
+      // 调到 8MB，配合 posts.ts 里封面图 4MB 的校验留出 multipart 编码开销。
+      bodySizeLimit: "8mb",
+    },
+  },
   // 安全响应头：给所有页面加防护头
   async headers() {
     return [

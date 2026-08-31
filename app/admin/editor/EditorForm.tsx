@@ -14,6 +14,8 @@ const initialState: ActionState = {};
 // —— 封面图压缩：浏览器端把大图压小，减小首页加载体积与存储/带宽占用 ——
 const MAX_COVER_EDGE = 1600; // 最长边
 const COMPRESS_QUALITY = 0.85;
+const MAX_COVER_BYTES = 4 * 1024 * 1024; // 压缩目标：体积超过 4MB 就压
+const MAX_SOURCE_BYTES = 30 * 1024 * 1024; // 原图兜底：超过 30MB 才拦，其余交给自动压缩
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -54,7 +56,8 @@ async function compressImage(file: File): Promise<Blob> {
     });
     const img = await loadImage(dataUrl);
     const scale = Math.min(1, MAX_COVER_EDGE / Math.max(img.width, img.height));
-    if (scale >= 1) return file;
+    // 触发压缩：尺寸超长边，或体积超过 4MB（如大 PNG 截图）
+    if (scale >= 1 && file.size <= MAX_COVER_BYTES) return file;
     const w = Math.round(img.width * scale);
     const h = Math.round(img.height * scale);
     const canvas = document.createElement("canvas");
@@ -274,8 +277,9 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
                     if (coverFileRef.current) coverFileRef.current.value = "";
                     return;
                   }
-                  if (f.size > 4 * 1024 * 1024) {
-                    setCoverFileError("图片过大（最多 4MB），请先压缩再上传。");
+                  // 超大兜底（30MB）：正常照片都交给自动压缩，只有异常大的文件才拦
+                  if (f.size > MAX_SOURCE_BYTES) {
+                    setCoverFileError("图片过大（超过 30MB），请换一张图。");
                     setCoverFilePreview(null);
                     setCoverFileName(null);
                     if (coverFileRef.current) coverFileRef.current.value = "";

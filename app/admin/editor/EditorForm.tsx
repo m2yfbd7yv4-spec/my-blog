@@ -11,6 +11,67 @@ import type { ActionState, Post } from "@/lib/types";
 
 const initialState: ActionState = {};
 
+// —— 封面图压缩：浏览器端把大图压小，减小首页加载体积与存储/带宽占用 ——
+const MAX_COVER_EDGE = 1600; // 最长边
+const COMPRESS_QUALITY = 0.85;
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("图片读取失败"));
+    img.src = src;
+  });
+}
+
+function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  type: string,
+  quality: number,
+): Promise<Blob | null> {
+  return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+}
+
+function extFromType(type: string, fallback: string): string {
+  const map: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+  };
+  return map[type] || fallback;
+}
+
+// GIF 动图不压（会丢动画）；压缩失败或没变小就用原图，绝不阻断上传
+async function compressImage(file: File): Promise<Blob> {
+  if (file.type === "image/gif") return file;
+  try {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(new Error("图片读取失败"));
+      r.readAsDataURL(file);
+    });
+    const img = await loadImage(dataUrl);
+    const scale = Math.min(1, MAX_COVER_EDGE / Math.max(img.width, img.height));
+    if (scale >= 1) return file;
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    const blob = await canvasToBlob(canvas, "image/jpeg", COMPRESS_QUALITY);
+    return blob && blob.size < file.size ? blob : file;
+  } catch {
+    return file;
+  }
+}
+
 export function EditorForm({ initialPost }: { initialPost: Post | null }) {
   const [state, formAction, pending] = useActionState(savePost, initialState);
   const supabase = useMemo(() => createClient(), []);
@@ -38,11 +99,15 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("登录已过期，请重新登录");
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const toUpload = await compressImage(file);
+      const ext = extFromType(
+        toUpload.type,
+        (file.name.split(".").pop() || "jpg").toLowerCase(),
+      );
       const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage
         .from("posts")
-        .upload(path, file, { contentType: file.type });
+        .upload(path, toUpload, { contentType: toUpload.type });
       if (upErr) throw upErr;
       const url = supabase.storage.from("posts").getPublicUrl(path).data.publicUrl;
       setCoverImage(url);
@@ -209,8 +274,8 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
                     if (coverFileRef.current) coverFileRef.current.value = "";
                     return;
                   }
-                  if (f.size > 10 * 1024 * 1024) {
-                    setCoverFileError("图片过大（最多 10MB），请先压缩再上传。");
+                  if (f.size > 4 * 1024 * 1024) {
+                    setCoverFileError("图片过大（最多 4MB），请先压缩再上传。");
                     setCoverFilePreview(null);
                     setCoverFileName(null);
                     if (coverFileRef.current) coverFileRef.current.value = "";

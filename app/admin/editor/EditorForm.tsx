@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState, useActionState } from "react";
+import { useRef, useState, useActionState, useMemo } from "react";
 import Link from "next/link";
 import { savePost } from "@/lib/actions/posts";
+import { createClient } from "@/lib/supabase/client";
 import { slugify } from "@/lib/utils";
 import { CATEGORIES, DEFAULT_CATEGORY } from "@/lib/categories";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
@@ -12,6 +13,7 @@ const initialState: ActionState = {};
 
 export function EditorForm({ initialPost }: { initialPost: Post | null }) {
   const [state, formAction, pending] = useActionState(savePost, initialState);
+  const supabase = useMemo(() => createClient(), []);
   const [title, setTitle] = useState(initialPost?.title ?? "");
   const [slug, setSlug] = useState(initialPost?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(!!initialPost);
@@ -20,12 +22,40 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
   const [coverFilePreview, setCoverFilePreview] = useState<string | null>(null);
   const [coverFileError, setCoverFileError] = useState<string | null>(null);
   const [coverFileName, setCoverFileName] = useState<string | null>(null);
+  const [coverUploading, setCoverUploading] = useState(false);
   const [content, setContent] = useState(initialPost?.content ?? "");
   const [category, setCategory] = useState(
     initialPost?.category ?? DEFAULT_CATEGORY,
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const coverFileRef = useRef<HTMLInputElement>(null);
+
+  // 封面图直传 Supabase Storage：绕过 Vercel 请求体 4.5MB 上限，大图不再 500
+  async function uploadCover(file: File) {
+    setCoverUploading(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("登录已过期，请重新登录");
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("posts")
+        .upload(path, file, { contentType: file.type });
+      if (upErr) throw upErr;
+      const url = supabase.storage.from("posts").getPublicUrl(path).data.publicUrl;
+      setCoverImage(url);
+    } catch (err) {
+      setCoverFileError(
+        "封面图上传失败：" + (err instanceof Error ? err.message : "未知错误"),
+      );
+      setCoverFilePreview(null);
+      setCoverFileName(null);
+    } finally {
+      setCoverUploading(false);
+    }
+  }
 
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value;
@@ -148,8 +178,8 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
               <input
                 ref={coverFileRef}
                 type="file"
-                name="coverImageFile"
                 accept="image/jpeg,image/png,image/webp,image/gif"
+                disabled={coverUploading}
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
@@ -179,19 +209,30 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
                     if (coverFileRef.current) coverFileRef.current.value = "";
                     return;
                   }
+                  if (f.size > 10 * 1024 * 1024) {
+                    setCoverFileError("图片过大（最多 10MB），请先压缩再上传。");
+                    setCoverFilePreview(null);
+                    setCoverFileName(null);
+                    if (coverFileRef.current) coverFileRef.current.value = "";
+                    return;
+                  }
                   setCoverFileError(null);
-                  setCoverImage("");
                   setCoverFileName(f.name);
                   setCoverFilePreview(URL.createObjectURL(f));
+                  setCoverImage("");
+                  void uploadCover(f);
                 }}
               />
             </label>
             {coverFileError && (
               <span className="text-xs text-red-600">{coverFileError}</span>
             )}
-            {!coverFileError && coverFilePreview && (
+            {coverUploading && (
+              <span className="text-xs text-indigo-600">封面图上传中…</span>
+            )}
+            {!coverUploading && !coverFileError && coverFilePreview && (
               <span className="text-xs text-gray-500">
-                已选：{coverFileName}，提交后会用这张图作封面
+                已上传：{coverFileName}，提交后会用这张图作封面
               </span>
             )}
           </div>
@@ -276,7 +317,7 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
             type="submit"
             name="action"
             value="draft"
-            disabled={pending}
+            disabled={pending || coverUploading}
             className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
           >
             {pending ? "保存中…" : "保存草稿"}
@@ -285,7 +326,7 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
             type="submit"
             name="action"
             value="publish"
-            disabled={pending}
+            disabled={pending || coverUploading}
             className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
           >
             {pending ? "发布中…" : "发布"}

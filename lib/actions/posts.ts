@@ -8,8 +8,6 @@ import { slugify } from "@/lib/utils";
 import { DEFAULT_CATEGORY } from "@/lib/categories";
 import type { ActionState } from "@/lib/types";
 
-const MAX_COVER_BYTES = 4 * 1024 * 1024; // 封面图上限 4MB（Vercel 请求体上限约 4.5MB，留余量）
-
 export async function savePost(
   _prevState: ActionState,
   formData: FormData,
@@ -35,45 +33,12 @@ export async function savePost(
   const status = action === "publish" ? "published" : "draft";
   if (!slug) slug = slugify(title);
 
-  // 封面图：优先用从访达上传的文件，否则用填写的链接
-  let finalCoverImage = coverImage;
-  let coverUploadFailed = false;
-  const coverFile = formData.get("coverImageFile");
-  if (coverFile instanceof File && coverFile.size > 0) {
-    if (!coverFile.type.startsWith("image/")) {
-      return { error: "封面图只能是图片文件" };
-    }
-    if (coverFile.size > MAX_COVER_BYTES) {
-      return { error: "封面图过大（最多 4MB，请先压缩图片）" };
-    }
-    const ext = (coverFile.name.split(".").pop() || "jpg").toLowerCase();
-    if (!["jpg", "jpeg", "png", "webp", "gif"].includes(ext)) {
-      return {
-        error:
-          ext === "heic" || ext === "heif"
-            ? "封面图是 HEIC 格式，浏览器打不开。请先转成 JPG 再上传。"
-            : "封面图格式不支持，请用 JPG / PNG / WebP / GIF。",
-      };
-    }
-    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-    const { error: upErr } = await supabase.storage
-      .from("posts")
-      .upload(path, coverFile, { contentType: coverFile.type });
-    if (upErr) {
-      // 上传失败（常见：存储桶还没建好）不阻断发文——文章照常保存，只是没有封面图
-      coverUploadFailed = true;
-    } else {
-      finalCoverImage = supabase.storage
-        .from("posts")
-        .getPublicUrl(path).data.publicUrl;
-    }
-  }
-
+  // 封面图：浏览器端已直传 Supabase Storage，这里只接收 URL 字符串
   const base = {
     title,
     slug,
     excerpt: excerpt || null,
-    cover_image: finalCoverImage || null,
+    cover_image: coverImage || null,
     content,
     category,
     status,
@@ -119,7 +84,7 @@ export async function savePost(
   }
 
   revalidatePath("/");
-  redirect(coverUploadFailed ? "/admin?cover=upload_failed" : "/admin");
+  redirect("/admin");
 }
 
 export async function deletePost(

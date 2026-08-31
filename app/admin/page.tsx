@@ -28,6 +28,12 @@ export default async function AdminPage() {
             评论审核{pendingCount ? `（${pendingCount}）` : ""}
           </Link>
           <Link
+            href="/admin/announcements"
+            className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
+          >
+            公告管理
+          </Link>
+          <Link
             href="/admin/editor"
             className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
           >

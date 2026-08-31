@@ -25,6 +25,7 @@ export async function savePost(
   const content = String(formData.get("content") ?? "");
   const category =
     String(formData.get("category") ?? "").trim() || DEFAULT_CATEGORY;
+  const featured = formData.get("featured") === "on";
   const action = String(formData.get("action") ?? "draft");
 
   if (!title) return { error: "请填写标题" };
@@ -41,6 +42,7 @@ export async function savePost(
     cover_image: coverImage || null,
     content,
     category,
+    featured,
     status,
   };
 

@@ -21,8 +21,11 @@ type Star = {
 
 export function Stars({
   count = 130,
+  contained = false,
 }: {
   count?: number;
+  // contained = true：填满父容器（如「推荐文章 + 公告」横带），而非整屏 120vh
+  contained?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -48,12 +51,21 @@ export function Stars({
     const stars: Star[] = [];
 
     function resize() {
-      W = window.innerWidth;
-      H = window.innerHeight * 1.2; // 与 .home-bg 的 height:120vh 对齐
-      fadeStart = H * 0.5; // 下半段开始淡出
-      fadeEnd = H * 0.85; // 接近底部完全消失
-      CV.width = W * DPR;
-      CV.height = H * DPR;
+      if (contained) {
+        // 填满父容器（横带）：用容器自身尺寸；上下边缘羽化交给外层 mask，不额外淡出
+        const rect = CV.getBoundingClientRect();
+        W = rect.width || window.innerWidth;
+        H = rect.height || 360;
+        fadeStart = H; // 不淡出（外层 mask 已做上下边缘过渡）
+        fadeEnd = H;
+      } else {
+        W = window.innerWidth;
+        H = window.innerHeight * 1.2; // 与 .home-bg 的 height:120vh 对齐
+        fadeStart = H * 0.5; // 下半段开始淡出
+        fadeEnd = H * 0.85; // 接近底部完全消失
+      }
+      CV.width = Math.max(1, W * DPR);
+      CV.height = Math.max(1, H * DPR);
       CV.style.width = W + "px";
       CV.style.height = H + "px";
       CTX.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -176,7 +188,11 @@ export function Stars({
     <canvas
       ref={canvasRef}
       className="pointer-events-none absolute z-0"
-      style={{ top: 0, left: 0, width: "100vw", height: "120vh" }}
+      style={
+        contained
+          ? { inset: 0, width: "100%", height: "100%" }
+          : { top: 0, left: 0, width: "100vw", height: "120vh" }
+      }
       aria-hidden="true"
     />
   );

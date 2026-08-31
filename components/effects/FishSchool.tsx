@@ -237,7 +237,8 @@ export function FishSchool() {
         left: 0,
         width: "100vw",
         height: "100vh",
-        zIndex: 0,
+        // 高于正文层(z-10)，让小鱼光标浮在推荐文章/公告横带之上，不被盖住；仍低于导航栏(z-20)
+        zIndex: 15,
         pointerEvents: "none",
       }}
     />

@@ -11,6 +11,7 @@ import { GuestbookForm } from "@/components/GuestbookForm";
 import type { GuestbookMessageDisplay } from "@/lib/types";
 import { PageTransition } from "@/components/PageTransition";
 import { FishSchool } from "@/components/effects/FishSchool";
+import { FeaturedAnnouncements } from "@/components/FeaturedAnnouncements";
 
 const siteName = "echo of eve";
 
@@ -21,6 +22,18 @@ export default async function HomePage() {
     .select("id, title, slug, excerpt, cover_image, published_at")
     .eq("status", "published")
     .order("published_at", { ascending: false });
+
+  const { data: featuredPosts } = await supabase
+    .from("posts")
+    .select("id, title, slug, excerpt, published_at")
+    .eq("status", "published")
+    .eq("featured", true)
+    .order("published_at", { ascending: false });
+
+  const { data: announcements } = await supabase
+    .from("announcements")
+    .select("id, title, content, created_at")
+    .order("created_at", { ascending: false });
 
   const { data: messages } = await supabase
     .from("guestbook_messages")
@@ -124,6 +137,30 @@ export default async function HomePage() {
   const testMessages =
     process.env.NODE_ENV === "development" ? MOCK_MESSAGES : (messages ?? []);
 
+  // ==== ⚠️ 临时测试数据：本地预览「推荐文章 + 公告」两个板块用，测试完删除 ====
+  const MOCK_ANNOUNCEMENTS = [
+    { id: "ann-1", title: "網站正式上線", content: "歡迎來到 echo of eve，這裡記錄生活、閱讀與一閃而過的靈感。", created_at: "2026-08-30T10:00:00Z" },
+    { id: "ann-2", title: "評論與留言已開放", content: "文章評論和留言板都開放了，歡迎留下你的足跡。", created_at: "2026-08-28T09:00:00Z" },
+  ];
+  const testFeatured =
+    process.env.NODE_ENV === "development" &&
+    (!featuredPosts || featuredPosts.length === 0)
+      ? MOCK_POSTS.slice(0, 2).map(
+          ({ id, title, slug, excerpt, published_at }) => ({
+            id,
+            title,
+            slug,
+            excerpt,
+            published_at,
+          }),
+        )
+      : (featuredPosts ?? []);
+  const testAnnouncements =
+    process.env.NODE_ENV === "development" &&
+    (!announcements || announcements.length === 0)
+      ? MOCK_ANNOUNCEMENTS
+      : (announcements ?? []);
+
   return (
     <PageTransition>
       {/* 鱼群（跟鼠标）：固定铺满，位于内容之下 */}
@@ -151,8 +188,24 @@ export default async function HomePage() {
           </div>
         </section>
 
-      {/* 三个功能入口：错落排列 + 悬浮泛光 + 滚动浮现 */}
-      <section className="relative max-w-3xl mx-auto px-4 py-16">
+      {/* 三个功能入口：错落排列 + 悬浮泛光 + 滚动浮现；左右两侧对称放 1611 抠图 */}
+      <section className="relative">
+        {/* 左/右两侧：1611 抠图人物，左右镜像对称，小尺寸贴边 */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/1611-cutout.png"
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute left-10 top-1/2 -translate-y-1/2 z-10 hidden md:block w-24 xl:w-[7.75rem] figure-float brightness-[1.25] contrast-[1.05] drop-shadow-[0_0_15px_rgba(255,200,80,0.75)]"
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/1611-cutout.png"
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 -scale-x-100 z-10 hidden md:block w-24 xl:w-[7.75rem] figure-float [animation-delay:3.25s] brightness-[1.25] contrast-[1.05] drop-shadow-[0_0_15px_rgba(255,200,80,0.75)]"
+        />
+        <div className="relative max-w-3xl mx-auto px-4 py-16">
         <FeatureParticles />
         <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
           <ScrollReveal delay={0} className="md:mt-16">
@@ -186,7 +239,14 @@ export default async function HomePage() {
             </Link>
           </ScrollReveal>
         </div>
+        </div>
       </section>
+
+      {/* 推荐文章 + 公告：暖棕背景横带，桌面左右并排、手机上下叠 */}
+      <FeaturedAnnouncements
+        featured={testFeatured}
+        announcements={testAnnouncements}
+      />
 
       {/* 文章列表 */}
       <section className="max-w-3xl mx-auto px-4 py-16">

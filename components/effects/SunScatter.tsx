@@ -32,9 +32,9 @@ export function SunScatter() {
     for (let i = 0; i < perSide * 2; i++) {
       const side: Sun["side"] = i < perSide ? "left" : "right";
       const slot = i % perSide;
-      // 垂直方向等距分布 + 抖动，避免扎堆
-      const baseTop = ((slot + 0.5) / perSide) * 80 + 4; // 约 17/44/71%
-      const top = Math.min(82, Math.max(4, baseTop + (Math.random() * 10 - 5)));
+      // 垂直方向等距分布 + 抖动，避免扎堆；整体下移，与上方两侧的 1611 人物拉开距离
+      const baseTop = ((slot + 0.5) / perSide) * 58 + 24; // 约 34/53/72%
+      const top = Math.min(82, Math.max(24, baseTop + (Math.random() * 10 - 5)));
       const tier = tiers[Math.floor(Math.random() * tiers.length)];
       const size = Math.round(tier[0] + Math.random() * (tier[1] - tier[0]));
       const inset = 1 + Math.random() * 11; // 1-12%，左右靠边、不出屏

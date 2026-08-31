@@ -91,6 +91,7 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
   const [category, setCategory] = useState(
     initialPost?.category ?? DEFAULT_CATEGORY,
   );
+  const [featured, setFeatured] = useState(initialPost?.featured ?? false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const coverFileRef = useRef<HTMLInputElement>(null);
 
@@ -332,6 +333,19 @@ export function EditorForm({ initialPost }: { initialPost: Post | null }) {
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2 text-sm font-medium">
+            <input
+              type="checkbox"
+              name="featured"
+              checked={featured}
+              onChange={(e) => setFeatured(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            />
+            推荐（在首页推荐板块展示）
+          </label>
         </div>
 
         <div>

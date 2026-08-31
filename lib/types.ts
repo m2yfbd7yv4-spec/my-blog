@@ -20,6 +20,7 @@ export type Post = {
   cover_image: string | null;
   content: string;
   category: string;
+  featured: boolean;
   status: PostStatus;
   published_at: string | null;
   created_at: string;
@@ -86,4 +87,13 @@ export type Inspiration = {
   image_url: string | null;
   created_at: string;
   profiles: { username: string | null } | null;
+};
+
+// 首页公告
+export type Announcement = {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
 };

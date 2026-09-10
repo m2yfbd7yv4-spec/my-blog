@@ -34,6 +34,12 @@ export default async function AdminPage() {
             公告管理
           </Link>
           <Link
+            href="/admin/journal"
+            className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
+          >
+            行路手记
+          </Link>
+          <Link
             href="/admin/editor"
             className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
           >

@@ -97,3 +97,19 @@ export type Announcement = {
   created_at: string;
   updated_at: string;
 };
+
+// 行路手记分类
+export type JournalCategory = "experience" | "knowledge";
+
+// 行路手记（工作/学习经历 + 干货分享）
+export type JournalEntry = {
+  id: string;
+  title: string;
+  category: JournalCategory;
+  summary: string;
+  content: string;
+  link: string | null;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+};

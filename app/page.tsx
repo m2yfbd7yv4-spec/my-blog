@@ -12,6 +12,7 @@ import type { GuestbookMessageDisplay } from "@/lib/types";
 import { PageTransition } from "@/components/PageTransition";
 import { FishSchool } from "@/components/effects/FishSchool";
 import { FeaturedAnnouncements } from "@/components/FeaturedAnnouncements";
+import { JournalMarquee } from "@/components/effects/JournalMarquee";
 
 const siteName = "echo of eve";
 
@@ -41,6 +42,11 @@ export default async function HomePage() {
     .eq("status", "approved")
     .order("created_at", { ascending: false })
     .returns<GuestbookMessageDisplay[]>();
+
+  const { data: journalEntries } = await supabase
+    .from("journal_entries")
+    .select("id, title, category, summary")
+    .order("published_at", { ascending: false });
 
   const {
     data: { user },
@@ -161,6 +167,23 @@ export default async function HomePage() {
       ? MOCK_ANNOUNCEMENTS
       : (announcements ?? []);
 
+  // ==== ⚠️ 临时测试数据：本地预览「践学存档」两行滚动用，测试完删除 ====
+  const MOCK_JOURNAL = [
+    { id: "j-1", title: "在腾讯做产品的第一年", category: "experience", summary: "从校园到职场的第一次转身，学会在不确定里做决定。" },
+    { id: "j-2", title: "一次失败的实习教会我的事", category: "experience", summary: "被拒了三次才拿到的 offer，最后教会我如何选择。" },
+    { id: "j-3", title: "跨专业读研的自我重建", category: "experience", summary: "从工科转人文，重塑学习方法论的一年。" },
+    { id: "j-4", title: "秋招复盘：我如何拿下心仪 offer", category: "experience", summary: "从简历到面试，一步步拆解上岸的全过程。" },
+    { id: "j-5", title: "如何高效读一篇论文", category: "knowledge", summary: "三步速读法 + 笔记模板，告别逐字啃文献。" },
+    { id: "j-6", title: "我的时间管理系统", category: "knowledge", summary: "GTD + 番茄钟 + 周回顾，一套普通人能坚持的流程。" },
+    { id: "j-7", title: "Prompt 工程的实用清单", category: "knowledge", summary: "写提示词的常见误区与 10 个拿来即用的模板。" },
+    { id: "j-8", title: "搭建个人博客的技术选型", category: "knowledge", summary: "Next.js + Supabase + Vercel 的零成本方案。" },
+  ];
+  const testJournal =
+    process.env.NODE_ENV === "development" &&
+    (!journalEntries || journalEntries.length === 0)
+      ? MOCK_JOURNAL
+      : (journalEntries ?? []);
+
   return (
     <PageTransition>
       {/* 鱼群（跟鼠标）：固定铺满，位于内容之下 */}
@@ -205,9 +228,9 @@ export default async function HomePage() {
           aria-hidden
           className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 -scale-x-100 z-10 hidden md:block w-24 xl:w-[7.75rem] figure-float [animation-delay:3.25s] brightness-[1.25] contrast-[1.05] drop-shadow-[0_0_15px_rgba(255,200,80,0.75)]"
         />
-        <div className="relative max-w-3xl mx-auto px-4 py-16">
+        <div className="relative max-w-4xl mx-auto px-4 py-16">
         <FeatureParticles />
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
           <ScrollReveal delay={0} className="md:mt-16">
             <Link href="/archive" className="feature-link block">
               <span className="block font-script text-3xl md:text-4xl text-[#f4ece4]">
@@ -218,7 +241,7 @@ export default async function HomePage() {
               </span>
             </Link>
           </ScrollReveal>
-          <ScrollReveal delay={120}>
+          <ScrollReveal delay={120} className="md:pl-6">
             <Link href="/about" className="feature-link block">
               <span className="block font-script text-3xl md:text-4xl text-[#f4ece4]">
                 About
@@ -235,6 +258,16 @@ export default async function HomePage() {
               </span>
               <span className="mt-3 block text-xs tracking-[0.3em] text-[#c0a493]">
                 靈感源泉
+              </span>
+            </Link>
+          </ScrollReveal>
+          <ScrollReveal delay={360} className="md:mt-8">
+            <Link href="/journal" className="feature-link block">
+              <span className="block font-script text-3xl md:text-4xl text-[#f4ece4]">
+                Journal
+              </span>
+              <span className="mt-3 block text-xs tracking-[0.3em] text-[#c0a493]">
+                行路手記
               </span>
             </Link>
           </ScrollReveal>
@@ -282,6 +315,25 @@ export default async function HomePage() {
             還沒有動態。
           </div>
         )}
+      </section>
+
+      {/* 践学存档：行路手记内容横向滚动，两行对向 */}
+      <section className="relative py-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex items-baseline gap-4 mb-10">
+            <span className="text-xs uppercase tracking-[0.3em] font-bold text-[#c0a493]">
+              践学存档
+            </span>
+            <span className="h-px flex-1 bg-[#8a5a4e]" />
+            <Link
+              href="/journal"
+              className="shrink-0 text-xs tracking-[0.2em] text-[#c0a493] transition-colors hover:text-[#5a1f1c]"
+            >
+              查看全部 →
+            </Link>
+          </div>
+        </div>
+        <JournalMarquee entries={testJournal} />
       </section>
 
       {/* 留言板：淡粉水彩蔓延背景 + 不规则边缘 */}

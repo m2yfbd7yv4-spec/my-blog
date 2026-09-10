@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { journalCategoryLabel } from "@/lib/journal";
+import { journalSubcategoryLabel } from "@/lib/journal";
 import type { JournalEntry } from "@/lib/types";
 import { PageTransition } from "@/components/PageTransition";
 import { FeatureParticles } from "@/components/effects/FeatureParticles";
@@ -42,7 +42,7 @@ export default async function JournalDetailPage({
             </Link>
             <div className="mt-6 flex items-center gap-3 text-xs">
               <span className="rounded-full bg-[#e8d7b5] px-2.5 py-0.5 text-[#7a5c4a]">
-                {journalCategoryLabel(entry.category)}
+                {journalSubcategoryLabel(entry.subcategory)}
               </span>
               <span className="text-[#8a8580]">
                 {formatDate(entry.published_at)}

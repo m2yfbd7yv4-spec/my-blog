@@ -7,6 +7,7 @@ create table if not exists public.journal_entries (
   id uuid primary key default gen_random_uuid(),
   title text not null check (char_length(title) between 1 and 200),
   category text not null check (category in ('experience', 'knowledge')),
+  subcategory text not null check (subcategory in ('work', 'study', 'methodology', 'resource')),
   summary text not null check (char_length(summary) between 1 and 500),
   content text not null,
   link text,

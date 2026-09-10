@@ -98,14 +98,18 @@ export type Announcement = {
   updated_at: string;
 };
 
-// 行路手记分类
+// 行路手记一级分类
 export type JournalCategory = "experience" | "knowledge";
+
+// 行路手记二级分类（经历 → 工作/学习，干货 → 方法论/资源）
+export type JournalSubcategory = "work" | "study" | "methodology" | "resource";
 
 // 行路手记（工作/学习经历 + 干货分享）
 export type JournalEntry = {
   id: string;
   title: string;
   category: JournalCategory;
+  subcategory: JournalSubcategory;
   summary: string;
   content: string;
   link: string | null;

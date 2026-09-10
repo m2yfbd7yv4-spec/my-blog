@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { journalCategoryLabel } from "@/lib/journal";
+import { journalSubcategoryLabel } from "@/lib/journal";
 
 type MarqueeEntry = {
   id: string;
   title: string;
   category: string;
+  subcategory: string;
   summary: string;
 };
 
@@ -55,7 +56,7 @@ export function JournalMarquee({ entries }: { entries: MarqueeEntry[] }) {
                   className="marquee-card block"
                 >
                   <span className="block text-[11px] tracking-[0.2em] text-[#b98a6b]">
-                    {journalCategoryLabel(e.category)}
+                    {journalSubcategoryLabel(e.subcategory)}
                   </span>
                   <h3 className="mt-1.5 font-display text-lg leading-snug text-[#241209]">
                     {e.title}

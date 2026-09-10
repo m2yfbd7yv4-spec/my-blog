@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { JOURNAL_CATEGORIES, journalCategoryLabel } from "@/lib/journal";
+import { JOURNAL_CATEGORIES, journalSubcategoryLabel } from "@/lib/journal";
 import type { JournalEntry } from "@/lib/types";
 import { PageTransition } from "@/components/PageTransition";
 import { FeatureParticles } from "@/components/effects/FeatureParticles";
@@ -20,7 +20,7 @@ export default async function JournalPage({
   const { data: entries } = await supabase
     .from("journal_entries")
     .select(
-      "id, title, category, summary, content, link, published_at, created_at, updated_at",
+      "id, title, category, subcategory, summary, content, link, published_at, created_at, updated_at",
     )
     .order("published_at", { ascending: false })
     .returns<JournalEntry[]>();
@@ -88,7 +88,7 @@ export default async function JournalPage({
                         >
                           <div className="flex items-center gap-3 text-xs">
                             <span className="rounded-full bg-[#e8d7b5] px-2.5 py-0.5 text-[#7a5c4a]">
-                              {journalCategoryLabel(e.category)}
+                              {journalSubcategoryLabel(e.subcategory)}
                             </span>
                             <span className="text-[#8a8580]">
                               {formatDate(e.published_at)}

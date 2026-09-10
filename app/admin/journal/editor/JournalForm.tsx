@@ -1,10 +1,15 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { saveJournalEntry } from "@/lib/actions/journal";
-import { JOURNAL_CATEGORIES } from "@/lib/journal";
-import type { ActionState, JournalEntry } from "@/lib/types";
+import { JOURNAL_CATEGORIES, JOURNAL_SUBCATEGORIES } from "@/lib/journal";
+import type {
+  ActionState,
+  JournalCategory,
+  JournalEntry,
+  JournalSubcategory,
+} from "@/lib/types";
 
 const initialState: ActionState = {};
 
@@ -13,6 +18,15 @@ export function JournalForm({ initial }: { initial: JournalEntry | null }) {
     saveJournalEntry,
     initialState,
   );
+
+  const [category, setCategory] = useState<JournalCategory>(
+    initial?.category ?? "experience",
+  );
+  const [subcategory, setSubcategory] = useState<JournalSubcategory>(
+    initial?.subcategory ?? "work",
+  );
+
+  const subOptions = JOURNAL_SUBCATEGORIES[category] ?? [];
 
   const inputCls =
     "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -57,7 +71,12 @@ export function JournalForm({ initial }: { initial: JournalEntry | null }) {
             <select
               id="category"
               name="category"
-              defaultValue={initial?.category ?? "experience"}
+              value={category}
+              onChange={(e) => {
+                const next = e.target.value as JournalCategory;
+                setCategory(next);
+                setSubcategory(JOURNAL_SUBCATEGORIES[next][0].value);
+              }}
               className={inputCls}
             >
               {JOURNAL_CATEGORIES.map((c) => (
@@ -69,23 +88,45 @@ export function JournalForm({ initial }: { initial: JournalEntry | null }) {
           </div>
           <div>
             <label
-              htmlFor="published_at"
+              htmlFor="subcategory"
               className="block text-sm font-medium mb-1"
             >
-              日期（留空用今天）
+              子分类
             </label>
-            <input
-              id="published_at"
-              name="published_at"
-              type="date"
-              defaultValue={
-                initial?.published_at
-                  ? initial.published_at.slice(0, 10)
-                  : ""
+            <select
+              id="subcategory"
+              name="subcategory"
+              value={subcategory}
+              onChange={(e) =>
+                setSubcategory(e.target.value as JournalSubcategory)
               }
               className={inputCls}
-            />
+            >
+              {subOptions.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="published_at"
+            className="block text-sm font-medium mb-1"
+          >
+            日期（留空用今天）
+          </label>
+          <input
+            id="published_at"
+            name="published_at"
+            type="date"
+            defaultValue={
+              initial?.published_at ? initial.published_at.slice(0, 10) : ""
+            }
+            className={inputCls}
+          />
         </div>
 
         <div>

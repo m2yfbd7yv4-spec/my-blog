@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteJournalButton } from "@/components/DeleteJournalButton";
 import { formatDate } from "@/lib/utils";
-import { journalCategoryLabel } from "@/lib/journal";
+import { journalCategoryLabel, journalSubcategoryLabel } from "@/lib/journal";
 import type { JournalEntry } from "@/lib/types";
 
 export default async function JournalAdminPage() {
@@ -11,7 +11,7 @@ export default async function JournalAdminPage() {
   const { data: entries } = await supabase
     .from("journal_entries")
     .select(
-      "id, title, category, summary, content, link, published_at, created_at, updated_at",
+      "id, title, category, subcategory, summary, content, link, published_at, created_at, updated_at",
     )
     .order("published_at", { ascending: false })
     .returns<JournalEntry[]>();
@@ -39,7 +39,8 @@ export default async function JournalAdminPage() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
-                      {journalCategoryLabel(e.category)}
+                      {journalCategoryLabel(e.category)} ·{" "}
+                      {journalSubcategoryLabel(e.subcategory)}
                     </span>
                     <h2 className="font-semibold text-gray-800">{e.title}</h2>
                   </div>

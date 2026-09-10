@@ -45,7 +45,7 @@ export default async function HomePage() {
 
   const { data: journalEntries } = await supabase
     .from("journal_entries")
-    .select("id, title, category, summary")
+    .select("id, title, category, subcategory, summary")
     .order("published_at", { ascending: false });
 
   const {
@@ -169,14 +169,14 @@ export default async function HomePage() {
 
   // ==== ⚠️ 临时测试数据：本地预览「践学存档」两行滚动用，测试完删除 ====
   const MOCK_JOURNAL = [
-    { id: "j-1", title: "在腾讯做产品的第一年", category: "experience", summary: "从校园到职场的第一次转身，学会在不确定里做决定。" },
-    { id: "j-2", title: "一次失败的实习教会我的事", category: "experience", summary: "被拒了三次才拿到的 offer，最后教会我如何选择。" },
-    { id: "j-3", title: "跨专业读研的自我重建", category: "experience", summary: "从工科转人文，重塑学习方法论的一年。" },
-    { id: "j-4", title: "秋招复盘：我如何拿下心仪 offer", category: "experience", summary: "从简历到面试，一步步拆解上岸的全过程。" },
-    { id: "j-5", title: "如何高效读一篇论文", category: "knowledge", summary: "三步速读法 + 笔记模板，告别逐字啃文献。" },
-    { id: "j-6", title: "我的时间管理系统", category: "knowledge", summary: "GTD + 番茄钟 + 周回顾，一套普通人能坚持的流程。" },
-    { id: "j-7", title: "Prompt 工程的实用清单", category: "knowledge", summary: "写提示词的常见误区与 10 个拿来即用的模板。" },
-    { id: "j-8", title: "搭建个人博客的技术选型", category: "knowledge", summary: "Next.js + Supabase + Vercel 的零成本方案。" },
+    { id: "j-1", title: "在腾讯做产品的第一年", category: "experience", subcategory: "work", summary: "从校园到职场的第一次转身，学会在不确定里做决定。" },
+    { id: "j-2", title: "一次失败的实习教会我的事", category: "experience", subcategory: "work", summary: "被拒了三次才拿到的 offer，最后教会我如何选择。" },
+    { id: "j-3", title: "跨专业读研的自我重建", category: "experience", subcategory: "study", summary: "从工科转人文，重塑学习方法论的一年。" },
+    { id: "j-4", title: "研究生如何做好一次文献汇报", category: "experience", subcategory: "study", summary: "从读文献到做 PPT，一套可复用的汇报流程。" },
+    { id: "j-5", title: "如何高效读一篇论文", category: "knowledge", subcategory: "methodology", summary: "三步速读法 + 笔记模板，告别逐字啃文献。" },
+    { id: "j-6", title: "我的时间管理系统", category: "knowledge", subcategory: "methodology", summary: "GTD + 番茄钟 + 周回顾，一套普通人能坚持的流程。" },
+    { id: "j-7", title: "Prompt 工程的实用清单", category: "knowledge", subcategory: "resource", summary: "写提示词的常见误区与 10 个拿来即用的模板。" },
+    { id: "j-8", title: "搭建个人博客的技术选型", category: "knowledge", subcategory: "resource", summary: "Next.js + Supabase + Vercel 的零成本方案。" },
   ];
   const testJournal =
     process.env.NODE_ENV === "development" &&

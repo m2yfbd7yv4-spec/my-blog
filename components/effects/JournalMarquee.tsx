@@ -31,7 +31,7 @@ export function JournalMarquee({ entries }: { entries: MarqueeEntry[] }) {
   if (entries.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-[#c0a493]">
-        还没有内容，去后台添加第一条行路手记吧。
+        还没有内容，敬请期待。
       </p>
     );
   }

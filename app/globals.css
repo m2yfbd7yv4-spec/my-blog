@@ -1060,16 +1060,7 @@ body {
 .marquee-card {
   flex: 0 0 auto;
   width: 16rem;
-  margin-right: 1rem;
-  padding: 1.25rem;
-  border-radius: 0.375rem;
-  border: 1px solid #e4d9c8;
-  background: #fbf7ef;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.marquee-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(70, 45, 25, 0.16);
+  margin-right: 1.25rem;
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {

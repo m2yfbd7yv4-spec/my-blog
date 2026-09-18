@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { journalSubcategoryLabel } from "@/lib/journal";
+import { PaperCard } from "@/components/effects/PaperCard";
 
 type MarqueeEntry = {
   id: string;
@@ -36,14 +37,14 @@ export function JournalMarquee({ entries }: { entries: MarqueeEntry[] }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {rows.map((row) => {
         const list = entries.filter((e) => e.category === row.key);
         if (list.length === 0) return null;
         const items = buildMarqueeList(list);
 
         return (
-          <div key={row.key} className="overflow-hidden">
+          <div key={row.key} className="overflow-hidden py-4">
             <div
               className={`marquee-track${
                 row.reverse ? " marquee-track--reverse" : ""
@@ -55,15 +56,17 @@ export function JournalMarquee({ entries }: { entries: MarqueeEntry[] }) {
                   href={`/journal/${e.id}`}
                   className="marquee-card block"
                 >
-                  <span className="block text-[11px] tracking-[0.2em] text-[#b98a6b]">
-                    {journalSubcategoryLabel(e.subcategory)}
-                  </span>
-                  <h3 className="mt-1.5 font-display text-lg leading-snug text-[#241209]">
-                    {e.title}
-                  </h3>
-                  <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-[#46281a]">
-                    {e.summary}
-                  </p>
+                  <PaperCard floating>
+                    <span className="block text-[11px] tracking-[0.2em] text-[#b98a6b]">
+                      {journalSubcategoryLabel(e.subcategory)}
+                    </span>
+                    <h3 className="mt-1.5 font-display text-lg leading-snug text-[#241209]">
+                      {e.title}
+                    </h3>
+                    <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-[#46281a]">
+                      {e.summary}
+                    </p>
+                  </PaperCard>
                 </Link>
               ))}
             </div>

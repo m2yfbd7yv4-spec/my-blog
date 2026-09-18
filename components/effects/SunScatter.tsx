@@ -32,9 +32,10 @@ export function SunScatter() {
     for (let i = 0; i < perSide * 2; i++) {
       const side: Sun["side"] = i < perSide ? "left" : "right";
       const slot = i % perSide;
-      // 垂直方向等距分布 + 抖动，避免扎堆；整体下移，与上方两侧的 1611 人物拉开距离
-      const baseTop = ((slot + 0.5) / perSide) * 58 + 24; // 约 34/53/72%
-      const top = Math.min(82, Math.max(24, baseTop + (Math.random() * 10 - 5)));
+      // 垂直方向等距分布 + 抖动，避免扎堆；放在酒红区上半段（推荐文章/公告横带 + 最新动态一带），
+      // 既不盖住中间全宽的「践学存档」横滚，也不沉到留言板那么靠下
+      const baseTop = ((slot + 0.5) / perSide) * 34 + 10; // 约 16/27/38%
+      const top = Math.min(44, Math.max(8, baseTop + (Math.random() * 5 - 2.5)));
       const tier = tiers[Math.floor(Math.random() * tiers.length)];
       const size = Math.round(tier[0] + Math.random() * (tier[1] - tier[0]));
       const inset = 1 + Math.random() * 11; // 1-12%，左右靠边、不出屏

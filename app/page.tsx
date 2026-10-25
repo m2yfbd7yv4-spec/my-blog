@@ -228,9 +228,9 @@ export default async function HomePage() {
           aria-hidden
           className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 -scale-x-100 z-10 hidden md:block w-24 xl:w-[7.75rem] figure-float [animation-delay:3.25s] brightness-[1.25] contrast-[1.05] drop-shadow-[0_0_15px_rgba(255,200,80,0.75)]"
         />
-        <div className="relative max-w-4xl mx-auto px-4 py-16">
+        <div className="relative max-w-3xl mx-auto px-4 py-16">
         <FeatureParticles />
-        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
           <ScrollReveal delay={0} className="md:mt-16">
             <Link href="/archive" className="feature-link block">
               <span className="block font-script text-3xl md:text-4xl text-[#f4ece4]">
@@ -241,7 +241,7 @@ export default async function HomePage() {
               </span>
             </Link>
           </ScrollReveal>
-          <ScrollReveal delay={120} className="md:pl-6">
+          <ScrollReveal delay={120} className="">
             <Link href="/about" className="feature-link block">
               <span className="block font-script text-3xl md:text-4xl text-[#f4ece4]">
                 About
@@ -258,16 +258,6 @@ export default async function HomePage() {
               </span>
               <span className="mt-3 block text-xs tracking-[0.3em] text-[#c0a493]">
                 靈感源泉
-              </span>
-            </Link>
-          </ScrollReveal>
-          <ScrollReveal delay={360} className="md:mt-8">
-            <Link href="/journal" className="feature-link block">
-              <span className="block font-script text-3xl md:text-4xl text-[#f4ece4]">
-                Journal
-              </span>
-              <span className="mt-3 block text-xs tracking-[0.3em] text-[#c0a493]">
-                行路手記
               </span>
             </Link>
           </ScrollReveal>

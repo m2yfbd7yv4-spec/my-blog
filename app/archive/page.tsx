@@ -260,8 +260,21 @@ export default async function ArchivePage({
           </nav>
         </aside>
 
-        {/* 右侧：列表/方格切换 + 内容 */}
-        <ArchiveView posts={filtered} />
+        {/* 右侧：行路手记便签 + 列表/方格切换 + 内容 */}
+        <div>
+          <Link href="/journal" className="sticky-note mb-6 block">
+            <span className="block font-display text-lg leading-snug text-[#3f270c]">
+              行路手記
+            </span>
+            <span className="mt-1 block text-sm leading-6 text-[#6a4a26]">
+              工作学习经历 · 干货分享
+            </span>
+            <span className="mt-2 block text-xs tracking-[0.2em] text-[#7d5a30]">
+              点击进入 →
+            </span>
+          </Link>
+          <ArchiveView posts={filtered} />
+        </div>
         </div>
         </div>
       </div>

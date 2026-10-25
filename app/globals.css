@@ -832,6 +832,66 @@ body {
   }
 }
 
+/* ========== 归档页「行路手记」便签：贴在右侧的便利贴（毛边） ========== */
+.sticky-note {
+  position: relative;
+  padding: 1.25rem 1.5rem 1.5rem;
+  transform: rotate(-2deg);
+  transition: transform 0.25s ease;
+}
+.sticky-note::before {
+  /* 便签纸：牛皮纸质感（纸张纹理叠加牛皮底色）+ 撕纸毛边遮罩 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    url("/paper-texture.jpg") center / cover no-repeat,
+    linear-gradient(165deg, #d0a86b 0%, #b0834c 100%);
+  background-blend-mode: multiply, normal;
+  -webkit-mask-image: url("/paper-mask.svg");
+  mask-image: url("/paper-mask.svg");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  filter: drop-shadow(0 6px 14px rgba(120, 85, 30, 0.28));
+  transition: filter 0.25s ease;
+}
+.sticky-note::after {
+  /* 顶部胶带 */
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  z-index: 2;
+  width: 92px;
+  height: 26px;
+  transform: translateX(-50%) rotate(-2deg);
+  background: rgba(255, 255, 255, 0.45);
+  border-left: 1px dashed rgba(120, 85, 30, 0.18);
+  border-right: 1px dashed rgba(120, 85, 30, 0.18);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+}
+.sticky-note > span {
+  position: relative;
+  z-index: 1;
+}
+.sticky-note:hover {
+  transform: rotate(0deg) translateY(-3px);
+}
+.sticky-note:hover::before {
+  filter: drop-shadow(0 12px 22px rgba(120, 85, 30, 0.34));
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticky-note,
+  .sticky-note:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
 /* ========== 归档页背景：桌面截图铺满 ========== */
 .archive-bg {
   position: fixed;

@@ -34,6 +34,13 @@ export default function AboutPage() {
             >
               chy19883580787@qq.com
             </a>
+            <span className="text-[#8a8580]"> · </span>
+            <a
+              href="mailto:evechen2323@gmail.com"
+              className="text-[#7a5c4a] underline underline-offset-2 transition-colors hover:text-[#1a1a1a]"
+            >
+              evechen2323@gmail.com
+            </a>
           </p>
 
           <div className="pt-8 border-t border-[#e0d8ca] space-y-4">

@@ -18,6 +18,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: "/test/cover-1.png",
     published_at: "2026-08-26T10:00:00Z",
     category: "essays",
+    collections: [],
     content: `# 山間午後的咖啡香
 
 第一次在海拔兩千米的茶園旁喝到手沖，山嵐和咖啡香混在一起。
@@ -36,6 +37,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: null,
     published_at: "2026-08-24T10:00:00Z",
     category: "notes",
+    collections: [],
     content: `# 關於閱讀的幾件小事
 
 讀一本書的節奏，其實和呼吸一樣，急不得。
@@ -54,6 +56,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: "/test/cover-3.png",
     published_at: "2026-08-21T10:00:00Z",
     category: "journal",
+    collections: [],
     content: `# 城市散步地圖
 
 沿著舊城牆走，每一條巷子都藏著一段被遺忘的故事。
@@ -70,6 +73,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: null,
     published_at: "2026-08-18T10:00:00Z",
     category: "essays",
+    collections: [],
     content: `# 一封信，寫給十年後的自己
 
 如果只能留下一句話，我會寫：請記得你為什麼出發。
@@ -88,6 +92,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: "/test/cover-2.png",
     published_at: "2026-08-15T10:00:00Z",
     category: "general",
+    collections: [],
     content: `# 手沖咖啡的入門指南
 
 從磨豆的粗細到水溫，幾個小步驟，讓你在家也能沖出一杯好咖啡。
@@ -116,6 +121,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: "/test/cover-4.png",
     published_at: "2026-08-12T10:00:00Z",
     category: "reviews",
+    collections: [],
     content: `# 雨天的爵士樂歌單
 
 窗外下著雨，配上這幾首爵士，整個房間都慢了下來。
@@ -136,6 +142,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: null,
     published_at: "2026-08-08T10:00:00Z",
     category: "notes",
+    collections: [],
     content: `# 寫作是與自己的對話
 
 每一次落筆，都是一次誠實的自我整理。
@@ -152,6 +159,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: "/test/cover-5.png",
     published_at: "2026-07-20T10:00:00Z",
     category: "reviews",
+    collections: [],
     content: `# 讀《百年孤獨》的片段
 
 馬康多的雨下了四年十一個月零兩天，而我讀到那頁時，窗外剛好也在下雨。
@@ -168,6 +176,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: "/test/cover-6.png",
     published_at: "2025-12-05T10:00:00Z",
     category: "journal",
+    collections: [],
     content: `# 京都的舊書店
 
 在四条附近的小巷裡，藏著一間只賣舊書的小店。
@@ -184,6 +193,7 @@ const MOCK_POSTS: ArchivePost[] = [
     cover_image: null,
     published_at: "2025-11-30T10:00:00Z",
     category: "general",
+    collections: [],
     content: `# 關於這個博客
 
 這裡記錄一些雜七雜八的念頭，隨手寫下，不趕時間。
@@ -201,6 +211,8 @@ export default async function ArchivePage({
 }) {
   const sp = await searchParams;
   const selected = typeof sp.category === "string" ? sp.category : null;
+  const selectedCollection =
+    typeof sp.collection === "string" ? sp.collection : null;
 
   const supabase = await createClient();
   const { data: posts } = await supabase
@@ -210,12 +222,43 @@ export default async function ArchivePage({
     .order("published_at", { ascending: false })
     .returns<ArchivePost[]>();
 
-  const allPosts = posts && posts.length > 0 ? posts : MOCK_POSTS;
-  // general 就是「全部」：默认或选了 general 都显示所有文章
-  const filtered =
-    selected && selected !== DEFAULT_CATEGORY
-      ? allPosts.filter((p) => p.category === selected)
-      : allPosts;
+  // 合集：列表（侧栏筛选用）+ 关联表（每篇文章属于哪些合集）
+  const { data: collections } = await supabase
+    .from("collections")
+    .select("id, name")
+    .order("created_at", { ascending: true })
+    .returns<{ id: string; name: string }[]>();
+
+  const { data: collectionLinks } = await supabase
+    .from("collection_posts")
+    .select("collection_id, post_id")
+    .returns<{ collection_id: string; post_id: string }[]>();
+
+  const collectionById = new Map((collections ?? []).map((c) => [c.id, c]));
+  const collectionsByPost = new Map<string, { id: string; name: string }[]>();
+  for (const link of collectionLinks ?? []) {
+    const c = collectionById.get(link.collection_id);
+    if (!c) continue;
+    const arr = collectionsByPost.get(link.post_id) ?? [];
+    arr.push({ id: c.id, name: c.name });
+    collectionsByPost.set(link.post_id, arr);
+  }
+
+  const basePosts = posts && posts.length > 0 ? posts : MOCK_POSTS;
+  const allPosts = basePosts.map((p) => ({
+    ...p,
+    collections: collectionsByPost.get(p.id) ?? [],
+  }));
+
+  // 合集与分类并列筛选：选了合集就按合集筛，否则沿用现有分类筛选
+  let filtered = allPosts;
+  if (selectedCollection) {
+    filtered = filtered.filter((p) =>
+      p.collections.some((c) => c.id === selectedCollection),
+    );
+  } else if (selected && selected !== DEFAULT_CATEGORY) {
+    filtered = filtered.filter((p) => p.category === selected);
+  }
 
   return (
     <PageTransition>
@@ -258,6 +301,31 @@ export default async function ArchivePage({
               );
             })}
           </nav>
+          {collections && collections.length > 0 && (
+            <div className="mt-10">
+              <h2 className="font-display text-xs uppercase tracking-[0.35em] text-[#8a8580]">
+                合集
+              </h2>
+              <nav className="mt-4 flex flex-wrap gap-x-5 gap-y-3 md:block">
+                {collections.map((c) => {
+                  const active = selectedCollection === c.id;
+                  return (
+                    <Link
+                      key={c.id}
+                      href={`/archive?collection=${c.id}`}
+                      className={`block font-typewriter text-base transition-colors ${
+                        active
+                          ? "text-[#7a3f2a] font-semibold"
+                          : "text-[#504f50] hover:text-[#1a1a1a]"
+                      }`}
+                    >
+                      {c.name}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
         </aside>
 
         {/* 右侧：行路手记便签 + 列表/方格切换 + 内容 */}

@@ -36,6 +36,7 @@ export type ArchivePost = {
   cover_image: string | null;
   published_at: string | null;
   category: string;
+  collections: { id: string; name: string }[];
   content: string;
 };
 
@@ -94,6 +95,15 @@ export type Announcement = {
   id: string;
   title: string;
   content: string;
+  created_at: string;
+  updated_at: string;
+};
+
+// 文章合集（用户自建，与「分类」并列的第二套归类）
+export type Collection = {
+  id: string;
+  name: string;
+  description: string | null;
   created_at: string;
   updated_at: string;
 };

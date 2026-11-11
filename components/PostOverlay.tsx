@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { formatDate } from "@/lib/utils";
+import { postMetaLabel } from "@/lib/categories";
 import type { ArchivePost } from "@/lib/types";
 
 // 归档页「浮层阅读」：点击目录里的文章后，以一张纸片的形式从面板上弹出正文，
@@ -65,6 +66,9 @@ export function PostOverlay({
               <time className="text-xs uppercase tracking-[0.25em] text-[#8a8580]">
                 {formatDate(post.published_at)}
               </time>
+              <p className="mt-2 text-xs tracking-[0.1em] text-[#7a5c4a]">
+                {postMetaLabel(post.category, post.collections)}
+              </p>
             </header>
 
             {post.cover_image && (

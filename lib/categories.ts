@@ -15,3 +15,14 @@ export const DEFAULT_CATEGORY = "general";
 export function categoryLabel(slug: string): string {
   return CATEGORIES.find((c) => c.slug === slug)?.label ?? slug;
 }
+
+// 归档文章徽标：把「分类」和所属「合集」拼成一行（如 "Essays · 读书合集"）。
+// collections 可缺省（首页精简对象不传），无合集时只显示分类。
+export function postMetaLabel(
+  category: string,
+  collections?: { name: string }[],
+): string {
+  return [categoryLabel(category), ...(collections ?? []).map((c) => c.name)].join(
+    " · ",
+  );
+}

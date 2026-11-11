@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatDate } from "@/lib/utils";
+import { postMetaLabel } from "@/lib/categories";
 import { PostOverlay } from "@/components/PostOverlay";
 import { PostCard } from "@/components/PostCard";
 import { PaperCard } from "@/components/effects/PaperCard";
@@ -98,10 +99,15 @@ function ListView({
                   <button
                     type="button"
                     onClick={() => onOpen(post)}
-                    className="group flex w-full items-baseline justify-between gap-4 py-4 text-left"
+                    className="group flex w-full items-start justify-between gap-4 py-4 text-left"
                   >
-                    <span className="font-display text-[#1a1a1a] transition-colors group-hover:text-[#7a5c4a]">
-                      {post.title}
+                    <span className="min-w-0">
+                      <span className="block font-display text-[#1a1a1a] transition-colors group-hover:text-[#7a5c4a]">
+                        {post.title}
+                      </span>
+                      <span className="mt-1 block text-xs tracking-[0.1em] text-[#b3aea8]">
+                        {postMetaLabel(post.category, post.collections)}
+                      </span>
                     </span>
                     <time className="shrink-0 text-xs tracking-[0.15em] text-[#b3aea8]">
                       {formatDate(post.published_at)}

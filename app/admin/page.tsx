@@ -46,6 +46,18 @@ export default async function AdminPage() {
             合集管理
           </Link>
           <Link
+            href="/admin/visitors"
+            className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
+          >
+            访客记录
+          </Link>
+          <Link
+            href="/admin/visitors/bans"
+            className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
+          >
+            屏蔽管理
+          </Link>
+          <Link
             href="/admin/editor"
             className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
           >

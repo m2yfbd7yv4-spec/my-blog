@@ -24,6 +24,16 @@ export async function submitComment(
     return { error: "请先登录后再评论" };
   }
 
+  // 拉黑检查：被拉黑的用户不能评论
+  const { data: bannedUser } = await supabase
+    .from("banned_users")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (bannedUser) {
+    return { error: "你的账号已被禁止评论和留言" };
+  }
+
   const postId = String(formData.get("postId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
 

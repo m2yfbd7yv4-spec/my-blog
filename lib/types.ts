@@ -108,6 +108,35 @@ export type Collection = {
   updated_at: string;
 };
 
+// 访客访问日志（一条 = 一次页面浏览）
+export type VisitorLog = {
+  id: number;
+  ip: string;
+  user_agent: string | null;
+  path: string | null;
+  referrer: string | null;
+  user_id: string | null;
+  created_at: string;
+  profiles?: { username: string | null } | null;
+};
+
+// 屏蔽的 IP（整站拦截）
+export type BannedIp = {
+  id: string;
+  ip: string;
+  reason: string | null;
+  created_at: string;
+};
+
+// 拉黑的用户（禁止评论/留言）
+export type BannedUser = {
+  id: string;
+  user_id: string;
+  reason: string | null;
+  created_at: string;
+  profiles?: { username: string | null } | null;
+};
+
 // 行路手记一级分类
 export type JournalCategory = "experience" | "knowledge";
 

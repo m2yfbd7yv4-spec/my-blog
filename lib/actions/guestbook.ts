@@ -25,6 +25,16 @@ export async function submitGuestbookMessage(
     return { error: "请先登录后再留言" };
   }
 
+  // 拉黑检查：被拉黑的用户不能留言
+  const { data: bannedUser } = await supabase
+    .from("banned_users")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (bannedUser) {
+    return { error: "你的账号已被禁止评论和留言" };
+  }
+
   const content = String(formData.get("content") ?? "").trim();
 
   if (!content) return { error: "留言内容不能为空" };

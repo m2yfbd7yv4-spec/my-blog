@@ -106,7 +106,7 @@ function ListView({
                         {post.title}
                       </span>
                       <span className="mt-1 block text-xs tracking-[0.1em] text-[#b3aea8]">
-                        {postMetaLabel(post.category, post.collections)}
+                        {postMetaLabel(post.category, post.collections, post.tags)}
                       </span>
                     </span>
                     <time className="shrink-0 text-xs tracking-[0.15em] text-[#b3aea8]">

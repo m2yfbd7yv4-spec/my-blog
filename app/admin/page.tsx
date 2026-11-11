@@ -16,6 +16,11 @@ export default async function AdminPage() {
     .select("id", { count: "exact", head: true })
     .eq("status", "pending");
 
+  const { count: unreadCount } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("is_read", false);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -46,6 +51,12 @@ export default async function AdminPage() {
             合集管理
           </Link>
           <Link
+            href="/admin/tags"
+            className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
+          >
+            标签管理
+          </Link>
+          <Link
             href="/admin/visitors"
             className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
           >
@@ -56,6 +67,12 @@ export default async function AdminPage() {
             className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
           >
             屏蔽管理
+          </Link>
+          <Link
+            href="/admin/notifications"
+            className="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-100"
+          >
+            通知{unreadCount ? `（${unreadCount}）` : ""}
           </Link>
           <Link
             href="/admin/editor"

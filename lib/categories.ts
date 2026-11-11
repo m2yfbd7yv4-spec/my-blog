@@ -21,8 +21,11 @@ export function categoryLabel(slug: string): string {
 export function postMetaLabel(
   category: string,
   collections?: { name: string }[],
+  tags?: { name: string }[],
 ): string {
-  return [categoryLabel(category), ...(collections ?? []).map((c) => c.name)].join(
-    " · ",
-  );
+  return [
+    categoryLabel(category),
+    ...(collections ?? []).map((c) => c.name),
+    ...(tags ?? []).map((t) => t.name),
+  ].join(" · ");
 }

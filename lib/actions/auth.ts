@@ -76,6 +76,16 @@ export async function register(
     return { error: error.message };
   }
 
+  // 站内通知站长
+  try {
+    await supabase.from("notifications").insert({
+      type: "registration",
+      message: `新用户「${username || email}」注册了`,
+    });
+  } catch {
+    // 通知写入失败不影响注册
+  }
+
   return {
     success: "注册成功！请去邮箱查收验证邮件，点击链接完成验证后再登录。",
   };

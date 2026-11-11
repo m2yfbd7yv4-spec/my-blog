@@ -37,6 +37,7 @@ export type ArchivePost = {
   published_at: string | null;
   category: string;
   collections: { id: string; name: string }[];
+  tags: { id: string; name: string }[];
   content: string;
 };
 
@@ -135,6 +136,22 @@ export type BannedUser = {
   reason: string | null;
   created_at: string;
   profiles?: { username: string | null } | null;
+};
+
+// 标签（轻量的多对多归类，与「分类」「合集」并列）
+export type Tag = {
+  id: string;
+  name: string;
+  created_at: string;
+};
+
+// 站内通知（站长）
+export type Notification = {
+  id: string;
+  type: "comment" | "guestbook" | "registration";
+  message: string;
+  is_read: boolean;
+  created_at: string;
 };
 
 // 行路手记一级分类

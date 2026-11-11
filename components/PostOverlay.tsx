@@ -67,7 +67,7 @@ export function PostOverlay({
                 {formatDate(post.published_at)}
               </time>
               <p className="mt-2 text-xs tracking-[0.1em] text-[#7a5c4a]">
-                {postMetaLabel(post.category, post.collections)}
+                {postMetaLabel(post.category, post.collections, post.tags)}
               </p>
             </header>
 

@@ -45,6 +45,9 @@ export function NavbarLinks({
         <Link href="/#guestbook" className={`transition-colors ${hover}`}>
           留言板
         </Link>
+        <Link href="/search" className={`transition-colors ${hover}`}>
+          搜索
+        </Link>
         {isAdmin && (
           <Link href="/admin" className={`transition-colors ${hover}`}>
             管理后台

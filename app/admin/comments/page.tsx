@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { moderateComment } from "@/lib/actions/comments";
-import { moderateGuestbookMessage } from "@/lib/actions/guestbook";
+import { moderateComment, approveAllComments } from "@/lib/actions/comments";
+import {
+  moderateGuestbookMessage,
+  approveAllGuestbook,
+} from "@/lib/actions/guestbook";
 import { formatDate } from "@/lib/utils";
 import type { ModerationComment, GuestbookMessageDisplay } from "@/lib/types";
 
@@ -41,9 +44,21 @@ export default async function CommentsPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">评论审核</h1>
 
-      <h2 className="text-lg font-semibold mb-3">
-        待审核（{pending?.length ?? 0}）
-      </h2>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">
+          待审核（{pending?.length ?? 0}）
+        </h2>
+        {pending && pending.length > 0 && (
+          <form action={approveAllComments}>
+            <button
+              type="submit"
+              className="rounded-md bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
+            >
+              一键通过全部
+            </button>
+          </form>
+        )}
+      </div>
       {!pending || pending.length === 0 ? (
         <p className="mb-10 text-gray-400">没有待审核的评论。</p>
       ) : (
@@ -118,9 +133,21 @@ export default async function CommentsPage() {
       )}
 
       <h2 className="text-lg font-semibold mb-3 mt-10">留言板留言</h2>
-      <h3 className="text-sm font-medium mb-3 text-gray-500">
-        待审核（{gbPending?.length ?? 0}）
-      </h3>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-gray-500">
+          待审核（{gbPending?.length ?? 0}）
+        </h3>
+        {gbPending && gbPending.length > 0 && (
+          <form action={approveAllGuestbook}>
+            <button
+              type="submit"
+              className="rounded-md bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
+            >
+              一键通过全部
+            </button>
+          </form>
+        )}
+      </div>
       {!gbPending || gbPending.length === 0 ? (
         <p className="mb-8 text-gray-400">没有待审核的留言。</p>
       ) : (

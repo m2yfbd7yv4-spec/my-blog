@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getAdminUser } from "@/lib/server-auth";
 import { beijingDayStart } from "@/lib/utils";
+import { isSpam } from "@/lib/spam";
 import type { ActionState } from "@/lib/types";
 
 export async function submitComment(
@@ -39,6 +40,9 @@ export async function submitComment(
 
   if (!content) return { error: "评论内容不能为空" };
   if (content.length > 500) return { error: "评论过长（最多 500 字）" };
+  if (isSpam(content)) {
+    return { error: "评论包含链接或疑似广告内容，无法提交" };
+  }
 
   // 频率限制：同一用户 30 秒内最多发一条
   const { data: recent } = await supabase
@@ -74,7 +78,40 @@ export async function submitComment(
     return { error: "评论提交失败，请稍后再试" };
   }
 
+  // 站内通知站长
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+    const { data: post } = await supabase
+      .from("posts")
+      .select("title")
+      .eq("id", postId)
+      .single();
+    await supabase.from("notifications").insert({
+      type: "comment",
+      message: `用户「${profile?.username ?? "匿名"}」在《${post?.title ?? "文章"}》发表了新评论`,
+    });
+  } catch {
+    // 通知写入失败不影响主流程
+  }
+
   return { success: "评论已提交，审核通过后会显示" };
+}
+
+// 一键通过全部待审核评论
+export async function approveAllComments(formData: FormData): Promise<void> {
+  const user = await getAdminUser();
+  if (!user) return;
+  const supabase = await createClient();
+  await supabase
+    .from("comments")
+    .update({ status: "approved" })
+    .eq("status", "pending");
+  revalidatePath("/admin/comments");
+  revalidatePath("/");
 }
 
 // 管理员审核评论（通过 / 拒绝 / 删除），用于后台审核页面

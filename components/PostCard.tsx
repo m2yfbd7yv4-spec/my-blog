@@ -13,6 +13,7 @@ type PostCardProps = {
     // 归档方格视图会带分类/合集，首页精简对象不传则无徽章
     category?: string;
     collections?: { id: string; name: string }[];
+    tags?: { id: string; name: string }[];
   };
   // 归档方格视图传了 onOpen：点卡片弹浮层，而不是跳转到独立文章页
   onOpen?: () => void;
@@ -34,7 +35,7 @@ export function PostCard({ post, onOpen }: PostCardProps) {
       </h2>
       {post.category && (
         <p className="mt-1.5 text-xs tracking-[0.1em] text-[#b3aea8]">
-          {postMetaLabel(post.category, post.collections)}
+          {postMetaLabel(post.category, post.collections, post.tags)}
         </p>
       )}
       <time className="mt-2 block text-xs tracking-[0.15em] text-[#7a3f2a]">

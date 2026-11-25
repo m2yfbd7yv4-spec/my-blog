@@ -15,8 +15,10 @@ export function slugify(input: string): string {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
-  // 如果结果不含 ASCII 字母/数字（例如全中文），用随机短串保证 URL 干净
-  if (!s || !/[a-z0-9]/.test(s)) {
+  // 只要结果含有任何非 ASCII 字符（中文、全角符号、表情等），就用随机短串兜底，
+  // 保证 URL 干净可访问。之前只判断「有没有英文字母/数字」，中文标题带个数字「1」
+  // 就会漏过，存成中文 slug 导致点进去 404。
+  if (!s || /[^a-z0-9-]/.test(s)) {
     return `post-${Math.random().toString(36).slice(2, 10)}`;
   }
   return s;
